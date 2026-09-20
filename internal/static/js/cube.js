@@ -21,7 +21,7 @@ let raf;
 function animateTo(target, dur) {
     cancelAnimationFrame(raf);
     if (reduce) { set(target); return; }
-    const start = parseFloat(slider.value);
+    //const start = parseFloat(slider.value);
     const t0 = performance.now();
     const ease = t => 1 - Math.pow(1 - t, 3);   // ease-out cubic
     (function frame(now) {
@@ -39,4 +39,4 @@ function animateTo(target, dur) {
 
 // gentle intro fill so the cube shows what it does on load
 set(80);
-requestAnimationFrame(() => animateTo(66, 2200));
+//requestAnimationFrame(() => animateTo(66, 2200));
