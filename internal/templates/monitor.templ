@@ -26,7 +26,43 @@ templ Home () {
 
 <main id="app" >
 
+    <div class="stage">
+        <div class="glow"></div>
 
+        <div class="scene">
+            <div class="cube">
+                <div class="gface g-back"></div>
+                <div class="gface g-left"></div>
+                <div class="gface g-right"></div>
+                <div class="gface g-bottom"></div>
+
+                <!-- liquid box (inside the shell) -->
+                <div class="lface l-side l-back"></div>
+                <div class="lface l-side l-left"></div>
+                <div class="lface l-side l-right"></div>
+                <div class="lface l-side l-front">
+                    <span class="bubble"></span>
+                    <span class="bubble"></span>
+                    <span class="bubble"></span>
+                </div>
+                <div class="lface l-top"></div>
+
+                <!-- front-facing glass drawn last so the fill reads through it -->
+                <div class="gface g-front"></div>
+                <div class="gface g-top"></div>
+            </div>
+        </div>
+
+        <div class="readout" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <div class="num"><span id="num">0</span><span class="pct">%</span></div>
+            <div class="cap" id="cap">Loading</div>
+        </div>
+
+        <div class="controls">
+            <input id="slider" class="slider" type="range" min="0" max="100" value="0" step="0.5" aria-label="Progress">
+            <button id="run" class="run">Run</button>
+        </div>
+    </div>
 
 
 </main>
