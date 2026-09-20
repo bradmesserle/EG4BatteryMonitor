@@ -10,4 +10,5 @@ compile-templ:
 
 build:
 	@mkdir -p ${build_dir}
+	go mod tidy
 	GOARCH=arm64 GOOS=linux go build -o ${build_dir}/${binary_name}-arm64 ${main_go_path}
