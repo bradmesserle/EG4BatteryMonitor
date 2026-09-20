@@ -4,6 +4,11 @@ binary_name=eg4-monitor
 
 .REST_API: build
 
+all: update-dependencies compile-templ build
+
+update-dependencies:
+	go mod tidy
+
 compile-templ:
 	go tool templ generate
 
