@@ -31,11 +31,11 @@ function animateTo(target, dur) {
     })(t0);
 }
 
-slider.addEventListener('input', e => { cancelAnimationFrame(raf); set(+e.target.value); });
-runBtn.addEventListener('click', () => {
-    if (+slider.value >= 99.5) set(0);
-    animateTo(100, 3200);
-});
+// slider.addEventListener('input', e => { cancelAnimationFrame(raf); set(+e.target.value); });
+// runBtn.addEventListener('click', () => {
+//     if (+slider.value >= 99.5) set(0);
+//     animateTo(100, 3200);
+// });
 
 // gentle intro fill so the cube shows what it does on load
 set(0);
