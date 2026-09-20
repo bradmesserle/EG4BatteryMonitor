@@ -8,6 +8,7 @@ import (
 	"syscall"
 
 	"github.com/eg4/battery/monitor/internal"
+	"github.com/eg4/battery/monitor/internal/endpoints"
 	"github.com/labstack/echo/v5"
 	"github.com/labstack/echo/v5/middleware"
 )
@@ -34,7 +35,7 @@ func setupWebServer() {
 	//app.Use(middleware.Recover())
 	//app.Use(middleware.CORS())
 
-	//app.GET("/", func(c *echo.Context) error { return endpoints.Home(c, wizardInfo, status) })
+	app.GET("/", func(c *echo.Context) error { return endpoints.Home(c) })
 
 	//Console output SSE
 	//app.GET("/consoleStream", func(c *echo.Context) error { return endpoints.ConsoleLogStreamHandler(c) })
