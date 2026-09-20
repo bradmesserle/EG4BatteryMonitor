@@ -2,21 +2,51 @@ package main
 
 import (
 	"context"
+	"flag"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/eg4/battery/monitor/internal"
+	"github.com/eg4/battery/monitor/internal/eg4"
 	"github.com/eg4/battery/monitor/internal/endpoints"
+	serialcan "github.com/eg4/battery/monitor/internal/serial-can"
 	"github.com/labstack/echo/v5"
 	"github.com/labstack/echo/v5/middleware"
 )
 
 func main() {
 
+	channel := flag.String("channel", "/dev/ttyUSB0", "adapter serial device")
+	bitrate := flag.Int("bitrate", 500000, "CAN bitrate (EG4 = 500000)")
+	serialBaud := flag.Int("serial-baud", 2000000, "adapter USB serial baud")
+	mode := flag.String("mode", "silent", "silent = listen-only (safe); normal = also ACK")
+	intervalSec := flag.Float64("interval", 1.0, "seconds between snapshots (ignored for raw)")
+	flag.Parse()
+
 	//Setup web server
 	setupWebServer()
+
+	//Connect to EG4 Battery VIA Serial Port
+	config := eg4.SerialConfig{
+		channel,
+		bitrate,
+		serialBaud,
+		mode,
+		intervalSec,
+	}
+
+	info, err := eg4.GetBatteryInfo(config)
+	if err != nil {
+		return
+	}
+
+	//frames := make(chan frame, 256)
+	//go serialcan.HardwareSource(frames, *channel, *bitrate, *serialBaud, *mode)
+	//
+	//run(frames, *format, time.Duration(*intervalSec*float64(time.Second)))
 
 }
 

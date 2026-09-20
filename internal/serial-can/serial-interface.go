@@ -18,12 +18,12 @@ const (
 	cbaud   = 0x100F
 )
 
-// ---------------------------------------------------------------------------
+// Frame ---------------------------------------------------------------------------
 // Frame sources
 // ---------------------------------------------------------------------------
-type frame struct {
-	id   uint32
-	data []byte
+type Frame struct {
+	Id   uint32
+	Data []byte
 }
 
 type termios2 struct {
@@ -94,7 +94,7 @@ func configFrame(bitrate int, mode string) ([]byte, error) {
 	return append(m, sum), nil
 }
 
-func hardwareSource(out chan<- frame, channel string, bitrate, serialBaud int, mode string) {
+func HardwareSource(out chan<- Frame, channel string, bitrate, serialBaud int, mode string) {
 	fd, err := syscall.Open(channel, syscall.O_RDWR|syscall.O_NOCTTY|syscall.O_NONBLOCK, 0)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "open %s failed: %v\n", channel, err)
@@ -170,6 +170,6 @@ func hardwareSource(out chan<- frame, channel string, bitrate, serialBaud int, m
 		if err != nil || end != 0x55 {
 			continue // framing error -> resync
 		}
-		out <- frame{id, data}
+		out <- Frame{id, data}
 	}
 }

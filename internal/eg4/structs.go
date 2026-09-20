@@ -64,3 +64,11 @@ var warnBits = []bitLabel{
 	{2, 0x08, "over_temp_warn"}, {2, 0x10, "under_temp_warn"},
 	{3, 0x01, "charge_overcurrent_warn"}, {3, 0x80, "discharge_overcurrent_warn"},
 }
+
+type SerialConfig struct {
+	channel     string
+	bitrate     int
+	serialBaud  int
+	mode        string
+	intervalSec float64
+}
