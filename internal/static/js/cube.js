@@ -1,8 +1,8 @@
 const stage  = document.querySelector('.stage');
-const numEl  = document.getElementById('num');
-const capEl  = document.getElementById('cap');
-const bar    = document.querySelector('[role="progressbar"]');
-const slider = document.getElementById('slider');
+// const numEl  = document.getElementById('num');
+//const capEl  = document.getElementById('cap');
+//const bar    = document.querySelector('[role="progressbar"]');
+//const slider = document.getElementById('slider');
 const runBtn = document.getElementById('run');
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -10,10 +10,10 @@ const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 function set(p) {
     p = Math.max(0, Math.min(100, p));
     stage.style.setProperty('--p', (p / 100).toFixed(4));
-    numEl.textContent = Math.round(p);
-    slider.value = p;
-    bar.setAttribute('aria-valuenow', Math.round(p));
-    capEl.textContent = p >= 99.5 ? 'Complete' : 'Loading';
+    //numEl.textContent = Math.round(p);
+    //slider.value = p;
+    //bar.setAttribute('aria-valuenow', Math.round(p));
+    //capEl.textContent = p >= 99.5 ? 'Complete' : 'Loading';
     stage.classList.toggle('low', p < 20);
 }
 
@@ -38,5 +38,5 @@ function animateTo(target, dur) {
 // });
 
 // gentle intro fill so the cube shows what it does on load
-set(0);
+set(80);
 requestAnimationFrame(() => animateTo(66, 2200));
