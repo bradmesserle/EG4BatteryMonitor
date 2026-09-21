@@ -41,6 +41,9 @@ func BatteryStatusStreamHandler(c *echo.Context) error {
 			//Send Battery Pack Voltage
 			sendVoltage(sse, row)
 
+			//Send Battery Pack Current
+			sendCurrent(sse, row)
+
 		}
 
 	})
@@ -72,6 +75,14 @@ func sendSoc(sse *datastar.ServerSentEventGenerator, row eg4.Row) {
 func sendVoltage(sse *datastar.ServerSentEventGenerator, row eg4.Row) {
 	voltageString := floatToString(row.PackV, 2)
 	err := sse.ExecuteScript(fmt.Sprintf(`updateVoltage("%s")`, voltageString))
+	if err != nil {
+		log.Println(err)
+	}
+}
+
+func sendCurrent(sse *datastar.ServerSentEventGenerator, row eg4.Row) {
+	voltageString := floatToString(row.PackA, 2)
+	err := sse.ExecuteScript(fmt.Sprintf(`updateCurrent("%s")`, voltageString))
 	if err != nil {
 		log.Println(err)
 	}

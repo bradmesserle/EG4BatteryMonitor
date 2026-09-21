@@ -50,6 +50,17 @@ templ Home () {
                     voltageElm.textContent = voltage_mv + 'V';
                 }
 
+                function updateCurrent(current_ma) {
+                    const currentElm  = document.getElementById('current');
+                    currentElm.textContent = current_ma + 'A';
+                }
+
+                function updateStatus(status) {
+                    const statusElm  = document.getElementById('status');
+                    statusElm.textContent = status;
+                }
+
+
 
 
             </script>
@@ -141,7 +152,7 @@ templ Home () {
                     <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M5 8 L12 18 L19 8"/><path d="M5 8 Q12 4 19 8"/>
                     </svg>
-                    <span class="label" id="voltage">51.45V</span>
+                    <span class="label" id="voltage"></span>
                 </div>
 
                 <div class="box">
