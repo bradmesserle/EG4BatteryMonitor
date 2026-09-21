@@ -26,7 +26,7 @@ templ Home () {
 
 <main id="monitor" >
 
-    <div class="stage">
+    <div class="stage" data-init="@get('/batteryStatusStream',{openWhenHidden: true})">
         <div class="glow"></div>
 
         <div class="scene">
