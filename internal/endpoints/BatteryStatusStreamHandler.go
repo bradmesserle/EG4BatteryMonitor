@@ -40,6 +40,7 @@ func BatteryStatusStreamHandler(c *echo.Context) error {
                        const data = %s;
                        console.log(data);
                        console.log(data.soc_pct);
+                       set(data.soc_pct)
              `, msg)
 
 			err := sse.ExecuteScript(script)
