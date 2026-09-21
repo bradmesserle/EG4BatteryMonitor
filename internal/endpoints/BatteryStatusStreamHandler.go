@@ -35,11 +35,12 @@ func BatteryStatusStreamHandler(c *echo.Context) error {
 		//Check to see if the SSE connection is still open
 		if !sse.IsClosed() {
 
-			socString := strconv.Itoa(*row.SOC)
-			err := sse.ExecuteScript(fmt.Sprintf(`update("%s")`, socString))
-			if err != nil {
-				log.Println(err)
-			}
+			// Send State of Charge
+			sendSoc(sse, row)
+
+			//Send Battery Pack Voltage
+			sendVoltage(sse, row)
+
 		}
 
 	})
@@ -51,4 +52,27 @@ func BatteryStatusStreamHandler(c *echo.Context) error {
 		}
 	}
 
+}
+
+func floatToString(p *float64, dp int) string {
+	if p == nil {
+		return "—"
+	}
+	return fmt.Sprintf("%.*f", dp, *p)
+}
+
+func sendSoc(sse *datastar.ServerSentEventGenerator, row eg4.Row) {
+	socString := strconv.Itoa(*row.SOC)
+	err := sse.ExecuteScript(fmt.Sprintf(`update("%s")`, socString))
+	if err != nil {
+		log.Println(err)
+	}
+}
+
+func sendVoltage(sse *datastar.ServerSentEventGenerator, row eg4.Row) {
+	voltageString := floatToString(row.PackV, 2)
+	err := sse.ExecuteScript(fmt.Sprintf(`updateVoltage("%s")`, voltageString))
+	if err != nil {
+		log.Println(err)
+	}
 }

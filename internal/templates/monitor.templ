@@ -28,7 +28,34 @@ templ Home () {
 <main id="monitor" >
 
     <div class="device">
-        <div class="screen">
+        <div class="screen" data-init="@get('/batteryStatusStream',{openWhenHidden: true})" >
+
+            <script>
+                const cube  = document.querySelector('.progress-cube');
+                const voltageElm  = document.getElementById('voltage');
+
+
+                function set(p) {
+                    p = Math.max(0, Math.min(100, p));
+                    cube.style.setProperty('--p', (p / 100).toFixed(4));
+                    cube.classList.toggle('low', p < 20);
+                }
+
+
+                // Update State of Charge
+                function updateSoc(soc_pct) {
+                    set(soc_pct);
+                }
+
+                function updateVoltage(voltage_mv) {
+                    voltageElm.textContent = voltage_mv + 'V';
+                }
+
+
+
+            </script>
+
+
 
             <div class="logo"><div class="logo-circle">EG<span>4</span></div></div>
             <div class="datetime" id="datetime">2026-09-21 11:12</div>
@@ -78,26 +105,7 @@ templ Home () {
 
             <!-- Center battery -->
 
-            <div class="progress-cube col col-mid" data-init="@get('/batteryStatusStream',{openWhenHidden: true})">
-
-
-                <script>
-
-                    const stage  = document.querySelector('.progress-cube');
-
-                    function set(p) {
-                        p = Math.max(0, Math.min(100, p));
-                        stage.style.setProperty('--p', (p / 100).toFixed(4));
-                        stage.classList.toggle('low', p < 20);
-                    }
-
-
-
-                    function update(soc_pct) {
-                        set(soc_pct);
-                    }
-
-                </script>
+            <div class="progress-cube col col-mid" >
 
                 <div class="glow"></div>
 

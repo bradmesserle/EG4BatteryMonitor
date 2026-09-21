@@ -21,7 +21,7 @@ func main() {
 	bitrate := flag.Int("bitrate", 500000, "CAN bitrate (EG4 = 500000)")
 	serialBaud := flag.Int("serial-baud", 2000000, "adapter USB serial baud")
 	mode := flag.String("mode", "silent", "silent = listen-only (safe); normal = also ACK")
-	intervalSec := flag.Float64("interval", 5.0, "seconds between snapshots (ignored for raw)")
+	intervalSec := flag.Float64("interval", 1.0, "seconds between snapshots (ignored for raw)")
 	flag.Parse()
 
 	//Connect to EG4 Battery VIA Serial Port
