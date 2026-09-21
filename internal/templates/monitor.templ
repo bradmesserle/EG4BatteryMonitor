@@ -9,6 +9,7 @@ templ Home () {
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>EG4 Battery Monitor</title>
     <link href="/static/css/cube.css" rel="stylesheet">
+    <link href="/static/css/monitor-screen.css" rel="stylesheet">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -25,6 +26,172 @@ templ Home () {
 
 
 <main id="monitor" >
+
+    <div class="device">
+        <div class="screen">
+
+            <div class="logo"><div class="logo-circle">EG<span>4</span></div></div>
+            <div class="datetime" id="datetime">2026-09-21 11:12</div>
+
+            <!-- Left column -->
+            <div class="col col-left">
+                <div class="box">
+                    <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round">
+                        <circle cx="12" cy="12" r="4"/>
+                        <path d="M12 1v3M12 20v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M1 12h3M20 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>
+                    </svg>
+                    <span class="label" id="status">Standby</span>
+                </div>
+
+                <div class="box">
+                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8">
+                        <path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12z"/>
+                        <circle cx="12" cy="10" r="2.6"/>
+                    </svg>
+                    <span class="label" id="address">1</span>
+                </div>
+
+                <div class="box signal">
+                    <span class="proto">CAN</span>
+                    <svg width="34" height="30" viewBox="0 0 34 30" fill="#fff">
+                        <rect x="1" y="20" width="5" height="9" rx="1"/>
+                        <rect x="10" y="14" width="5" height="15" rx="1"/>
+                        <rect x="19" y="8" width="5" height="21" rx="1"/>
+                        <rect x="28" y="2" width="5" height="27" rx="1"/>
+                    </svg>
+                    <span class="label">EG4/LUX</span>
+                </div>
+
+                <div class="box signal">
+                    <span class="proto">RS485</span>
+                    <svg width="34" height="30" viewBox="0 0 34 30" fill="#fff">
+                        <rect x="1" y="20" width="5" height="9" rx="1"/>
+                        <rect x="10" y="14" width="5" height="15" rx="1"/>
+                        <rect x="19" y="8" width="5" height="21" rx="1"/>
+                        <rect x="28" y="2" width="5" height="27" rx="1"/>
+                    </svg>
+                    <span class="label">P01-EG4</span>
+                </div>
+
+                <div class="firmware">BMS: Z02T11<br>LCD: V1.3.1</div>
+            </div>
+
+            <!-- Center battery -->
+            <div class="col col-mid">
+                <div class="battery-wrap">
+                    <svg class="battery-svg" viewBox="0 0 240 260" xmlns="http://www.w3.org/2000/svg">
+                        <!-- translucent back walls (full container) -->
+                        <polygon points="120,28 58,60 58,210 120,178" fill="#9aa1de" opacity="0.30"/>
+                        <polygon points="120,28 182,60 182,210 120,178" fill="#b3bAe9" opacity="0.22"/>
+                        <!-- fill block (updated by JS) -->
+                        <polygon id="fillTop"   fill="#c9f2ff"/>
+                        <polygon id="fillLeft"  fill="#7fd4ec"/>
+                        <polygon id="fillRight" fill="#5cc0e0"/>
+                    </svg>
+                    <div class="battery-pct" id="pct">19%</div>
+                </div>
+            </div>
+
+            <!-- Right column -->
+            <div class="col col-right">
+                <div class="box">
+                    <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 8 L12 18 L19 8"/><path d="M5 8 Q12 4 19 8"/>
+                    </svg>
+                    <span class="label" id="voltage">51.45V</span>
+                </div>
+
+                <div class="box">
+                    <svg width="34" height="30" viewBox="0 0 30 22" fill="none" stroke="#fff" stroke-width="1.8">
+                        <rect x="1.5" y="4" width="23" height="14" rx="2.5"/>
+                        <rect x="26" y="8" width="2.6" height="6" rx="1" fill="#fff" stroke="none"/>
+                        <rect x="4.2" y="7" width="4" height="8" rx="1" fill="#fff" stroke="none"/>
+                        <rect x="9.4" y="7" width="4" height="8" rx="1" fill="#fff" stroke="none"/>
+                        <rect x="14.6" y="7" width="4" height="8" rx="1" fill="#fff" stroke="none"/>
+                    </svg>
+                    <span class="label" id="capacity">280Ah</span>
+                </div>
+
+                <div class="box">
+                    <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 15 A9 9 0 0 1 20 15"/>
+                        <path d="M8.5 19 L12 9 L15.5 19 M9.7 15.5 h4.6"/>
+                    </svg>
+                    <span class="label" id="current">0.00A</span>
+                </div>
+
+                <div class="box">
+                    <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6">
+                        <circle cx="12" cy="12" r="3.2"/>
+                        <path d="M12 2.5v2.4M12 19.1v2.4M4.2 4.2l1.7 1.7M18.1 18.1l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.2 19.8l1.7-1.7M18.1 5.9l1.7-1.7"/>
+                    </svg>
+                    <span class="label">Settings</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ================= CONTROL PANEL ================= -->
+    <div class="controls">
+        <h2>Live Controls</h2>
+
+        <div class="ctl soc">
+            <label for="socRange">State of charge</label>
+            <div class="soc-row">
+                <input type="range" id="socRange" min="0" max="100" value="19">
+                <span class="soc-val" id="socVal">19%</span>
+            </div>
+        </div>
+
+        <div class="ctl">
+            <label for="statusSel">Status</label>
+            <select id="statusSel">
+                <option>Standby</option>
+                <option>Charging</option>
+                <option>Discharging</option>
+                <option>Fault</option>
+            </select>
+        </div>
+
+        <div class="ctl">
+            <label for="voltInput">Voltage (V)</label>
+            <input type="number" id="voltInput" step="0.01" value="51.45">
+        </div>
+
+        <div class="ctl">
+            <label for="curInput">Current (A)</label>
+            <input type="number" id="curInput" step="0.01" value="0.00">
+        </div>
+
+        <div class="ctl">
+            <label for="capInput">Capacity (Ah)</label>
+            <input type="number" id="capInput" step="1" value="280">
+        </div>
+
+        <div class="ctl">
+            <label for="addrInput">Address</label>
+            <input type="number" id="addrInput" step="1" value="1">
+        </div>
+
+        <div class="ctl">
+            <label>Clock</label>
+            <div class="chk">
+                <input type="checkbox" id="liveClock" checked>
+                <label for="liveClock" style="font-weight:500;color:#e6e8ef;">Live (real time)</label>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
 
     <div class="stage" data-init="@get('/batteryStatusStream',{openWhenHidden: true})">
 
