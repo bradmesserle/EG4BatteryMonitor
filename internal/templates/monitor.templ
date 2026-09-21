@@ -34,6 +34,9 @@ templ Home () {
 
                 function set(p) {
                     const cube  = document.querySelector('.progress-cube');
+                    const socPercentageElm  = document.getElementById('soc-percentage');
+                    socPercentageElm.textContent = p + '%';
+
                     p = Math.max(0, Math.min(100, p));
                     cube.style.setProperty('--p', (p / 100).toFixed(4));
                     cube.classList.toggle('low', p < 20);
@@ -141,6 +144,10 @@ templ Home () {
                         <div class="gface g-front"></div>
                         <div class="gface g-top"></div>
                     </div>
+                </div>
+
+                <div class="box">
+                    <span class="label" id="soc-percentage"></span>
                 </div>
 
             </div>
