@@ -1,6 +1,7 @@
 main_go_path=./eg4-monitor
 build_dir=./bin
 binary_name=eg4-monitor
+version=0.0.1
 
 .REST_API: build
 
@@ -17,3 +18,17 @@ build:
 	@mkdir -p ${build_dir}
 	go mod tidy
 	GOARCH=arm64 GOOS=linux go build -o ${build_dir}/${binary_name}-arm64 ${main_go_path}
+
+
+package-deb:
+	@mkdir -p /tmp/EG4-Monitor-${version}_arm64/DEBIAN
+	@mkdir -p /tmp/EG4-Monitor-${version}_arm64/opt/eg4
+	cp ${build_dir}/${binary_name}-arm64 /tmp/EG4-Monitor-${version}_arm64/opt/eg4
+	cp unix-scripts/systemd/pinas-rest-services.service /tmp/EG4-Monitor-${version}_arm64/opt/eg4
+	chmod +x /tmp/EG4-Monitor-${version}_arm64/opt/eg4
+	cp deb-package-files/control /tmp/EG4-Monitor-${version}_arm64/DEBIAN
+	cp deb-package-files/postinst /tmp/EG4-Monitor-${version}_arm64/DEBIAN
+	cp deb-package-files/postrm /tmp/EG4-Monitor-${version}_arm64/DEBIAN
+	chmod +x  /tmp/EG4-Monitor-${version}_arm64/DEBIAN/postinst
+	chmod +x  /tmp/EG4-Monitor-${version}_arm64/DEBIAN/postrm
+	dpkg-deb --build --root-owner-group /tmp/EG4-Monitor-${version}_arm64
