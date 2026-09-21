@@ -31,10 +31,8 @@ templ Home () {
 
         //Update the cube with the latest data
         function update(msg) {
-            console.log(msg);
-
-
-
+            console.log(msg.soc_pct);
+            set(msg.soc_pct);
 
         }
 

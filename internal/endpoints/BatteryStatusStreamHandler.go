@@ -31,7 +31,7 @@ func BatteryStatusStreamHandler(c *echo.Context) error {
 	//Subscribe to the topic and post on the stream
 	_ = internal.EventBus.Subscribe("batteryStatus", func(msg string) {
 
-		fmt.Printf("Receiving Data --->: %s\n", msg)
+		//fmt.Printf("Receiving Data --->: %s\n", msg)
 
 		//Check to see if the SSE connection is still open
 		if !sse.IsClosed() {
