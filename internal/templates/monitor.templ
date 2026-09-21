@@ -78,18 +78,20 @@ templ Home () {
 
             <!-- Center battery -->
 
-            <div class="col col-mid" data-init="@get('/batteryStatusStream',{openWhenHidden: true})">
+            <div class="progress-cube col col-mid" data-init="@get('/batteryStatusStream',{openWhenHidden: true})">
 
 
                 <script>
 
-                    const stage  = document.querySelector('.stage');
+                    const stage  = document.querySelector('.progress-cube');
 
                     function set(p) {
                         p = Math.max(0, Math.min(100, p));
                         stage.style.setProperty('--p', (p / 100).toFixed(4));
                         stage.classList.toggle('low', p < 20);
                     }
+
+
 
                     function update(soc_pct) {
                         set(soc_pct);
@@ -125,20 +127,6 @@ templ Home () {
 
             </div>
 
-{{/*            <div class="col col-mid">*/}}
-{{/*                <div class="battery-wrap">*/}}
-{{/*                    <svg class="battery-svg" viewBox="0 0 240 260" xmlns="http://www.w3.org/2000/svg">*/}}
-{{/*                        <!-- translucent back walls (full container) -->*/}}
-{{/*                        <polygon points="120,28 58,60 58,210 120,178" fill="#9aa1de" opacity="0.30"/>*/}}
-{{/*                        <polygon points="120,28 182,60 182,210 120,178" fill="#b3bAe9" opacity="0.22"/>*/}}
-{{/*                        <!-- fill block (updated by JS) -->*/}}
-{{/*                        <polygon id="fillTop"   fill="#c9f2ff"/>*/}}
-{{/*                        <polygon id="fillLeft"  fill="#7fd4ec"/>*/}}
-{{/*                        <polygon id="fillRight" fill="#5cc0e0"/>*/}}
-{{/*                    </svg>*/}}
-{{/*                    <div class="battery-pct" id="pct">19%</div>*/}}
-{{/*                </div>*/}}
-{{/*            </div>*/}}
 
             <!-- Right column -->
             <div class="col col-right">
