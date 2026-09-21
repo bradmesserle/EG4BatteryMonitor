@@ -48,10 +48,10 @@ func run(frames <-chan serialcan.Frame, interval time.Duration) {
 // publish sends summarized data to the front end. Posting the data is done via the internal.EventBus.
 func publish(row Row) {
 
-	out := struct {
-		Timestamp string `json:"timestamp"`
-		Row
-	}{Timestamp: time.Now().Format("2006-01-02T15:04:05"), Row: row}
+	//out := struct {
+	//	Timestamp string `json:"timestamp"`
+	//	Row
+	//}{Timestamp: time.Now().Format("2006-01-02T15:04:05"), Row: row}
 	//b, _ := json.Marshal(out)
 	//fmt.Println(string(b))
 
