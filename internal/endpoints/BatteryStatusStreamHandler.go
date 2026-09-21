@@ -2,7 +2,6 @@ package endpoints
 
 import (
 	"fmt"
-	"html"
 	"log"
 
 	"github.com/eg4/battery/monitor/internal"
@@ -35,8 +34,8 @@ func BatteryStatusStreamHandler(c *echo.Context) error {
 
 		//Check to see if the SSE connection is still open
 		if !sse.IsClosed() {
-			sanitized := html.EscapeString(msg)
-			err := sse.ExecuteScript(fmt.Sprintf(`update("%s")`, sanitized))
+			//sanitized := html.EscapeString(msg)
+			err := sse.ExecuteScript(fmt.Sprintf(`update("%s")`, msg))
 			if err != nil {
 				log.Println(err)
 			}
