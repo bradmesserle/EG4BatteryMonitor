@@ -81,7 +81,7 @@ func sendVoltage(sse *datastar.ServerSentEventGenerator, row eg4.Row) {
 }
 
 func sendCurrent(sse *datastar.ServerSentEventGenerator, row eg4.Row) {
-	voltageString := floatToString(row.PackA, 2)
+	voltageString := floatToString(row.PackA, 3)
 	err := sse.ExecuteScript(fmt.Sprintf(`updateCurrent("%s")`, voltageString))
 	if err != nil {
 		log.Println(err)
