@@ -62,7 +62,9 @@ body {
     height: calc(var(--h) + var(--w) * 0.7);
     display: grid;
     place-items: center;
-    perspective: 900px;
+    /*
+    //perspective: 900px;
+     */
 }
 .cube {
     position: relative;
@@ -223,7 +225,7 @@ rotateY(-90deg) translateZ(calc(var(--w) / 2 - 1px)); }
     background: radial-gradient(circle, rgba(248,113,113,.30), transparent 62%);
 }
 
-@media (max-width: 480px) { :root { --w: 130px; --h: 205px; } }
+@media (max-width: 480px) { :root { --w: 50px; --h: 100px; } }
 
 @media (prefers-reduced-motion: reduce) {
     .bubble { animation: none; opacity: 0; }
