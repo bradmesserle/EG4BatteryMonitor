@@ -31,11 +31,9 @@ templ Home () {
         <div class="screen" data-init="@get('/batteryStatusStream',{openWhenHidden: true})" >
 
             <script>
-                const cube  = document.querySelector('.progress-cube');
-                const voltageElm  = document.getElementById('voltage');
-
 
                 function set(p) {
+                    const cube  = document.querySelector('.progress-cube');
                     p = Math.max(0, Math.min(100, p));
                     cube.style.setProperty('--p', (p / 100).toFixed(4));
                     cube.classList.toggle('low', p < 20);
@@ -48,6 +46,7 @@ templ Home () {
                 }
 
                 function updateVoltage(voltage_mv) {
+                    const voltageElm  = document.getElementById('voltage');
                     voltageElm.textContent = voltage_mv + 'V';
                 }
 
