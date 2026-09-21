@@ -2,6 +2,7 @@ package endpoints
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/eg4/battery/monitor/internal"
 	"github.com/labstack/echo/v5"
@@ -33,7 +34,6 @@ func BatteryStatusStreamHandler(c *echo.Context) error {
 
 		//Check to see if the SSE connection is still open
 		if !sse.IsClosed() {
-			//sanitized := html.EscapeString(msg)
 
 			//script := fmt.Sprintf(`
 			//           const data = %s;
@@ -41,25 +41,11 @@ func BatteryStatusStreamHandler(c *echo.Context) error {
 			//           console.log(data.soc_pct);
 			//           set(data.soc_pct)
 			// `, msg)
-
-			script2 := fmt.Sprintf(`<script>
-						jsFunction(
-                       const data = %s;
-                       console.log(data);
-                       console.log(data.soc_pct);
-                       set(data.soc_pct));
-					</script>
-             `, msg)
-
-			err1 := sse.PatchElements(script2)
-			if err1 != nil {
-				return
+			err := sse.ExecuteScript(fmt.Sprintf(`update("%s")`, msg))
+			//			err := sse.ExecuteScript(script)
+			if err != nil {
+				log.Println(err)
 			}
-
-			//err := sse.ExecuteScript(script)
-			//if err != nil {
-			//	log.Println(err)
-			//}
 		}
 
 	})

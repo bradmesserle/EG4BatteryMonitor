@@ -36,6 +36,30 @@ templ Home () {
 
 
     <div class="stage" data-init="@get('/batteryStatusStream',{openWhenHidden: true})">
+
+
+        <script>
+
+            const stage  = document.querySelector('.stage');
+
+            function set(p) {
+                p = Math.max(0, Math.min(100, p));
+                stage.style.setProperty('--p', (p / 100).toFixed(4));
+                //numEl.textContent = Math.round(p);
+                //slider.value = p;
+                //bar.setAttribute('aria-valuenow', Math.round(p));
+                //capEl.textContent = p >= 99.5 ? 'Complete' : 'Loading';
+                stage.classList.toggle('low', p < 20);
+            }
+
+            function update(data) {
+                set(data.soc_pct);
+            }
+
+
+
+        </script>
+
         <div class="glow"></div>
 
         <div class="scene">
