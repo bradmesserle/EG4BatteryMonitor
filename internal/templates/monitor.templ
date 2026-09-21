@@ -20,26 +20,29 @@ templ Home () {
     <!-- Cube JS -->
     <script type="module" src="/static/js/cube.js"></script>
 
+    <script>
+
+
+        //Update the cube with the latest data
+        function update(msg) {
+
+            console.log(msg);
+            console.log(msg.soc_pct);
+            //const batteryInfo = JSON.parse(msg);
+
+            //console.log(batteryInfo.soc_pct);
+            //set(msg.soc_pct);
+
+        }
+
+    </script>
+
+
 </head>
 
 <body>
 
-<script>
 
-
-    //Update the cube with the latest data
-    function update(msg) {
-
-        console.log(msg);
-        console.log(msg.soc_pct);
-        //const batteryInfo = JSON.parse(msg);
-
-        //console.log(batteryInfo.soc_pct);
-        //set(msg.soc_pct);
-
-    }
-
-</script>
 
 
 <main id="monitor" >
