@@ -37,7 +37,7 @@ func BatteryStatusStreamHandler(c *echo.Context) error {
 			//sanitized := html.EscapeString(msg)
 
 			script := fmt.Sprintf(`
-                       const data = $s;
+                       const data = %s;
                        console.log(data);
                        console.log(data.soc_pct);
              `, msg)
