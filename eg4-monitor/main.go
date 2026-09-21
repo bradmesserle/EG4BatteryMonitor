@@ -24,9 +24,6 @@ func main() {
 	intervalSec := flag.Float64("interval", 1.0, "seconds between snapshots (ignored for raw)")
 	flag.Parse()
 
-	//Setup web server
-	setupWebServer()
-
 	//Connect to EG4 Battery VIA Serial Port
 	config := eg4.SerialConfig{
 		Channel:     *channel,
@@ -40,6 +37,10 @@ func main() {
 	if err != nil {
 		return
 	}
+
+	//Setup web server
+	setupWebServer()
+
 }
 
 // setupWebServer Setup web server
