@@ -68,6 +68,19 @@ html, body {
 .col-mid   { grid-column: 2; align-items: center; justify-content: flex-start; gap: 0; }
 .col-right { grid-column: 3; }
 
+.soc-label {
+    padding: 1.9cqw 2.2cqw;
+    display: flex; align-items: center; gap: 2cqw;
+}
+.soc-label .label {
+    font-size: 3cqw; font-weight: 700;
+    text-shadow: 0 0 6px rgba(255,255,255,0.3);
+    white-space: nowrap;
+}
+
+
+
+
 .box {
     border: 0.28cqw solid var(--gold);
     border-radius: 1.6cqw;
