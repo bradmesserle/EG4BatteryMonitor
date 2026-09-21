@@ -3,8 +3,10 @@ package endpoints
 import (
 	"fmt"
 	"log"
+	"strconv"
 
 	"github.com/eg4/battery/monitor/internal"
+	"github.com/eg4/battery/monitor/internal/eg4"
 	"github.com/labstack/echo/v5"
 	"github.com/starfederation/datastar-go/datastar"
 )
@@ -28,20 +30,21 @@ func BatteryStatusStreamHandler(c *echo.Context) error {
 	_ = sse.MarshalAndPatchSignals(map[string]any{"streaming": true})
 
 	//Subscribe to the topic and post on the stream
-	_ = internal.EventBus.Subscribe("batteryStatus", func(msg string) {
+	_ = internal.EventBus.Subscribe("batteryStatus", func(row eg4.Row) {
 
 		//fmt.Printf("Receiving Data --->: %s\n", msg)
 
 		//Check to see if the SSE connection is still open
 		if !sse.IsClosed() {
 
+			socString := strconv.Itoa(*row.SOC)
 			//script := fmt.Sprintf(`
 			//           const data = %s;
 			//           console.log(data);
 			//           console.log(data.soc_pct);
 			//           set(data.soc_pct)
 			// `, msg)
-			err := sse.ExecuteScript(fmt.Sprintf(`update("%s")`, "testing123"))
+			err := sse.ExecuteScript(fmt.Sprintf(`update("%s")`, socString))
 			//			err := sse.ExecuteScript(script)
 			if err != nil {
 				log.Println(err)

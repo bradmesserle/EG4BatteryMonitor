@@ -1,7 +1,6 @@
 package eg4
 
 import (
-	"encoding/json"
 	"math"
 	"strings"
 	"sync"
@@ -53,12 +52,12 @@ func publish(row Row) {
 		Timestamp string `json:"timestamp"`
 		Row
 	}{Timestamp: time.Now().Format("2006-01-02T15:04:05"), Row: row}
-	b, _ := json.Marshal(out)
+	//b, _ := json.Marshal(out)
 	//fmt.Println(string(b))
 
 	//Send Success message to the front end.
-	internal.EventBus.Publish("batteryStatus", string(b))
-
+	//internal.EventBus.Publish("batteryStatus", string(b))
+	internal.EventBus.Publish("batteryStatus", row)
 }
 
 func dispatch(f serialcan.Frame, s *State) {
