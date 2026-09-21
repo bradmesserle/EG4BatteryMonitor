@@ -3,6 +3,7 @@ package endpoints
 import (
 	"fmt"
 	"log"
+	"log/slog"
 	"strconv"
 
 	"github.com/eg4/battery/monitor/internal"
@@ -61,7 +62,7 @@ func floatToString(p *float64, dp int) string {
 	if p == nil {
 		return "—"
 	}
-	return fmt.Sprintf("%.*f", dp, *p)
+	return fmt.Sprintf("%.*ff", dp, *p)
 }
 
 func sendSoc(sse *datastar.ServerSentEventGenerator, row eg4.Row) {
@@ -73,6 +74,7 @@ func sendSoc(sse *datastar.ServerSentEventGenerator, row eg4.Row) {
 }
 
 func sendVoltage(sse *datastar.ServerSentEventGenerator, row eg4.Row) {
+	slog.Float64("Current Value", *row.PackV)
 	voltageString := floatToString(row.PackV, 2)
 	err := sse.ExecuteScript(fmt.Sprintf(`updateVoltage("%s")`, voltageString))
 	if err != nil {
