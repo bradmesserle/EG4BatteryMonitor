@@ -31,17 +31,6 @@ function animateTo(target, dur) {
     })(t0);
 }
 
-
-function update(msg) {
-    const sanitized = html.EscapeString(msg);
-
-    console.log(sanitized);
-
-}
-
-
-
-
 // slider.addEventListener('input', e => { cancelAnimationFrame(raf); set(+e.target.value); });
 // runBtn.addEventListener('click', () => {
 //     if (+slider.value >= 99.5) set(0);
