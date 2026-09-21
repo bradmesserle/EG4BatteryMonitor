@@ -1,0 +1,6 @@
+#!/bin/bash
+
+#Remvoe syslink
+rm /etc/systemd/system/eg4-battery-monitor.service
+
+

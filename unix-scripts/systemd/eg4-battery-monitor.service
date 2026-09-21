@@ -1,0 +1,15 @@
+[Unit]
+Description=EG4 Battery Monitor
+After=network.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/opt/eg4
+ExecStart=/opt/eg4/eg4-monitor-arm64
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

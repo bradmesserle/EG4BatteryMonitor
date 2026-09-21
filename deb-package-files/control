@@ -1,0 +1,7 @@
+Package: EG4-Battery-Monitor
+Version: 0.0.1
+Architecture: arm64
+Essential: no
+Priority: optional
+Maintainer: Brad Messerle
+Description: EG4 Battery Monitor

@@ -1,0 +1,10 @@
+#!/bin/bash
+
+#Create symlink for the systemd service
+ln -s /opt/eg4/eg4-battery-monitor.service /etc/systemd/system
+
+# Refresh Deamon
+systemctl daemon-reload
+
+#Start the service
+systemctl enable --now eg4-battery-monitor.service
