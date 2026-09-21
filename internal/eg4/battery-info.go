@@ -27,9 +27,7 @@ func GetBatteryInfo(config SerialConfig) error {
 
 }
 
-// ---------------------------------------------------------------------------
-// Main loop
-// ---------------------------------------------------------------------------
+// run processes incoming CAN frames from the channel, updates state, and periodically publishes summarized data.
 func run(frames <-chan serialcan.Frame, interval time.Duration) {
 	var state State
 
@@ -48,6 +46,7 @@ func run(frames <-chan serialcan.Frame, interval time.Duration) {
 	}
 }
 
+// publish sends summarized data to the front end. Posting the data is done via the internal.EventBus.
 func publish(row Row) {
 
 	out := struct {
