@@ -2,7 +2,6 @@ package eg4
 
 import (
 	"encoding/json"
-	"fmt"
 	"math"
 	"strings"
 	"sync"
@@ -56,7 +55,7 @@ func publish(row Row) {
 		Row
 	}{Timestamp: time.Now().Format("2006-01-02T15:04:05"), Row: row}
 	b, _ := json.Marshal(out)
-	fmt.Println(string(b))
+	//fmt.Println(string(b))
 
 	//Send Success message to the front end.
 	internal.EventBus.Publish("batteryStatus", string(b))
