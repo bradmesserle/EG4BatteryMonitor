@@ -35,7 +35,7 @@ func BatteryStatusStreamHandler(c *echo.Context) error {
 		//Check to see if the SSE connection is still open
 		if !sse.IsClosed() {
 			//sanitized := html.EscapeString(msg)
-			err := sse.ExecuteScript(fmt.Sprintf(`update("%s")`, msg))
+			err := sse.ExecuteScript(fmt.Sprintf(`update("%s")`, string(msg)))
 			if err != nil {
 				log.Println(err)
 			}
