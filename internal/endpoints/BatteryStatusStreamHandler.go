@@ -41,7 +41,7 @@ func BatteryStatusStreamHandler(c *echo.Context) error {
 			//           console.log(data.soc_pct);
 			//           set(data.soc_pct)
 			// `, msg)
-			err := sse.ExecuteScript(fmt.Sprintf(`update("%s")`, msg))
+			err := sse.ExecuteScript(fmt.Sprintf(`update("%s")`, "testing123"))
 			//			err := sse.ExecuteScript(script)
 			if err != nil {
 				log.Println(err)
