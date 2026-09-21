@@ -17,7 +17,6 @@ html, body {
 /* Outer bezel */
 .device {
     width: min(94vw, calc(78vh * 16 / 9));
-    aspect-ratio: 16 / 9;
     background: #050608;
     border-radius: 14px;
     padding: 1.5%;
