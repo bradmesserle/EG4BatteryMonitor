@@ -24,7 +24,7 @@ package-deb:
 	@mkdir -p /tmp/EG4-Monitor-${version}_arm64/DEBIAN
 	@mkdir -p /tmp/EG4-Monitor-${version}_arm64/opt/eg4
 	cp ${build_dir}/${binary_name}-arm64 /tmp/EG4-Monitor-${version}_arm64/opt/eg4
-	cp unix-scripts/systemd/pinas-rest-services.service /tmp/EG4-Monitor-${version}_arm64/opt/eg4
+	cp unix-scripts/systemd/eg4-battery-monitor.service /tmp/EG4-Monitor-${version}_arm64/opt/eg4
 	chmod +x /tmp/EG4-Monitor-${version}_arm64/opt/eg4
 	cp deb-package-files/control /tmp/EG4-Monitor-${version}_arm64/DEBIAN
 	cp deb-package-files/postinst /tmp/EG4-Monitor-${version}_arm64/DEBIAN
