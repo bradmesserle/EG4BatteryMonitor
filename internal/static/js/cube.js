@@ -31,6 +31,17 @@ function animateTo(target, dur) {
     })(t0);
 }
 
+
+function update(msg) {
+    const sanitized = html.EscapeString(msg);
+
+    console.log(sanitized);
+
+}
+
+
+
+
 // slider.addEventListener('input', e => { cancelAnimationFrame(raf); set(+e.target.value); });
 // runBtn.addEventListener('click', () => {
 //     if (+slider.value >= 99.5) set(0);
@@ -38,5 +49,5 @@ function animateTo(target, dur) {
 // });
 
 // gentle intro fill so the cube shows what it does on load
-set(80);
+//set(80);
 //requestAnimationFrame(() => animateTo(66, 2200));
