@@ -1,49 +1,66 @@
 package eg4
 
 import (
+	"encoding/json"
+	"fmt"
 	"math"
 	"strings"
+	"sync"
 	"time"
 
+	"github.com/eg4/battery/monitor/internal"
 	serialcan "github.com/eg4/battery/monitor/internal/serial-can"
 )
 
-func GetBatteryInfo(config SerialConfig) (*Row, error) {
+// GetBatteryInfo initializes a connection to the CAN bus and processes battery data with the specified serial configuration.
+func GetBatteryInfo(config SerialConfig) error {
 
 	frames := make(chan serialcan.Frame, 256)
-	go serialcan.HardwareSource(frames, config.channel, config.bitrate, config.serialBaud, config.mode)
+	go serialcan.HardwareSource(frames, config.Channel, config.Bitrate, config.SerialBaud, config.Mode)
 
-	return nil, nil
+	//Start the battery monitoring process
+	var wg sync.WaitGroup
+	wg.Go(func() {
+		run(frames, time.Duration(config.IntervalSec*float64(time.Second)))
+	})
+
+	return nil
 
 }
 
 // ---------------------------------------------------------------------------
 // Main loop
 // ---------------------------------------------------------------------------
-func run(frames <-chan serialcan.Frame, format string, interval time.Duration) {
+func run(frames <-chan serialcan.Frame, interval time.Duration) {
 	var state State
-	emit := map[string]func(Row){"human": emitHuman, "csv": emitCSV, "json": emitJSON}[format]
-
-	if format == "raw" {
-		for f := range frames {
-			emitRaw(f)
-		}
-		return
-	}
 
 	ticker := time.NewTicker(interval)
 	defer ticker.Stop()
 	for {
 		select {
-		case f, ok := <-frames:
+		case frame, ok := <-frames:
 			if !ok {
 				return
 			}
-			dispatch(f, &state)
+			dispatch(frame, &state)
 		case <-ticker.C:
-			emit(buildRow(&state))
+			publish(buildRow(&state))
 		}
 	}
+}
+
+func publish(row Row) {
+
+	out := struct {
+		Timestamp string `json:"timestamp"`
+		Row
+	}{Timestamp: time.Now().Format("2006-01-02T15:04:05"), Row: row}
+	b, _ := json.Marshal(out)
+	fmt.Println(string(b))
+
+	//Send Success message to the front end.
+	internal.EventBus.Publish("batteryStatus", string(b))
+
 }
 
 func dispatch(f serialcan.Frame, s *State) {
