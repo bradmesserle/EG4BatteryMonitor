@@ -33,11 +33,11 @@ templ Home () {
         function update(msg) {
 
             console.log(msg);
+            console.log(msg.soc_pct);
+            //const batteryInfo = JSON.parse(msg);
 
-            const batteryInfo = JSON.parse(msg);
-
-            console.log(batteryInfo.soc_pct);
-            set(batteryInfo.soc_pct);
+            //console.log(batteryInfo.soc_pct);
+            //set(msg.soc_pct);
 
         }
 
