@@ -32,6 +32,8 @@ templ Home () {
         //Update the cube with the latest data
         function update(msg) {
 
+            console.log(msg);
+
             const batteryInfo = JSON.parse(msg);
 
             console.log(batteryInfo.soc_pct);
