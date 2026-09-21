@@ -63,7 +63,7 @@ func floatToString(p *float64, dp int) string {
 
 func sendSoc(sse *datastar.ServerSentEventGenerator, row eg4.Row) {
 	socString := strconv.Itoa(*row.SOC)
-	err := sse.ExecuteScript(fmt.Sprintf(`update("%s")`, socString))
+	err := sse.ExecuteScript(fmt.Sprintf(`updateSoc("%s")`, socString))
 	if err != nil {
 		log.Println(err)
 	}
