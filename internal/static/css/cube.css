@@ -11,7 +11,8 @@
     --glass: rgba(255,255,255,.035);
     --glass-edge: rgba(255,255,255,.16);
 
-    --s: 240px;   /* cube edge length */
+    --s: 275px;   /* cube edge length */
+    --h: 100px;   /* height of the cube */
     --p: 0;       /* progress, 0 .. 1  (the one value that drives the fill) */
 
     box-sizing: border-box;
@@ -58,7 +59,7 @@ body {
 /* ---- 3D scene -------------------------------------------------- */
 .scene {
     position: relative;
-    height: calc(var(--s) * 1.35);
+    height: calc(var(--h) * 1.35);
     display: grid;
     place-items: center;
     perspective: 900px;
@@ -66,7 +67,7 @@ body {
 .cube {
     position: relative;
     width: var(--s);
-    height: var(--s);
+    height: var(--h);
     transform-style: preserve-3d;
     transform: rotateX(-24deg) rotateY(-32deg);
 }
@@ -78,7 +79,7 @@ body {
 
 /* glass shell */
 .gface {
-    width: var(--s); height: var(--s);
+    width: var(--s); height: var(--h);
     margin: calc(var(--s) / -2);
     background: var(--glass);
     border: 1px solid var(--glass-edge);
