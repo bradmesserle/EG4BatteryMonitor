@@ -7,12 +7,10 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 
 	"github.com/eg4/battery/monitor/internal"
 	"github.com/eg4/battery/monitor/internal/eg4"
 	"github.com/eg4/battery/monitor/internal/endpoints"
-	serialcan "github.com/eg4/battery/monitor/internal/serial-can"
 	"github.com/labstack/echo/v5"
 	"github.com/labstack/echo/v5/middleware"
 )
@@ -31,14 +29,14 @@ func main() {
 
 	//Connect to EG4 Battery VIA Serial Port
 	config := eg4.SerialConfig{
-		channel,
-		bitrate,
-		serialBaud,
-		mode,
-		intervalSec,
+		Channel:     *channel,
+		Bitrate:     *bitrate,
+		SerialBaud:  *serialBaud,
+		Mode:        *mode,
+		IntervalSec: *intervalSec,
 	}
 
-	info, err := eg4.GetBatteryInfo(config)
+	_, err := eg4.GetBatteryInfo(config)
 	if err != nil {
 		return
 	}
@@ -68,7 +66,7 @@ func setupWebServer() {
 	app.GET("/", func(c *echo.Context) error { return endpoints.Home(c) })
 
 	//Console output SSE
-	//app.GET("/consoleStream", func(c *echo.Context) error { return endpoints.ConsoleLogStreamHandler(c) })
+	app.GET("/batteryStatusStream", func(c *echo.Context) error { return endpoints.BatteryStatusStreamHandler(c) })
 
 	// Start the server
 	sc := echo.StartConfig{

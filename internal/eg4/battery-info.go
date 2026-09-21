@@ -8,7 +8,7 @@ import (
 	serialcan "github.com/eg4/battery/monitor/internal/serial-can"
 )
 
-func GetBatteryInfo(config *SerialConfig) (*Row, error) {
+func GetBatteryInfo(config SerialConfig) (*Row, error) {
 
 	frames := make(chan serialcan.Frame, 256)
 	go serialcan.HardwareSource(frames, config.channel, config.bitrate, config.serialBaud, config.mode)
