@@ -2,7 +2,6 @@ package endpoints
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/eg4/battery/monitor/internal"
 	"github.com/labstack/echo/v5"
@@ -36,17 +35,31 @@ func BatteryStatusStreamHandler(c *echo.Context) error {
 		if !sse.IsClosed() {
 			//sanitized := html.EscapeString(msg)
 
-			script := fmt.Sprintf(`
+			//script := fmt.Sprintf(`
+			//           const data = %s;
+			//           console.log(data);
+			//           console.log(data.soc_pct);
+			//           set(data.soc_pct)
+			// `, msg)
+
+			script2 := fmt.Sprintf(`<script>
+						jsFunction(
                        const data = %s;
                        console.log(data);
                        console.log(data.soc_pct);
-                       set(data.soc_pct)
+                       set(data.soc_pct));
+					</script>
              `, msg)
 
-			err := sse.ExecuteScript(script)
-			if err != nil {
-				log.Println(err)
+			err1 := sse.PatchElements(script2)
+			if err1 != nil {
+				return
 			}
+
+			//err := sse.ExecuteScript(script)
+			//if err != nil {
+			//	log.Println(err)
+			//}
 		}
 
 	})
