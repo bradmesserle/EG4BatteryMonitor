@@ -24,24 +24,27 @@ templ Home () {
 
 <body>
 
+<script>
+
+
+    //Update the cube with the latest data
+    function update(msg) {
+
+        console.log(msg);
+        console.log(msg.soc_pct);
+        //const batteryInfo = JSON.parse(msg);
+
+        //console.log(batteryInfo.soc_pct);
+        //set(msg.soc_pct);
+
+    }
+
+</script>
+
+
 <main id="monitor" >
 
-    <script>
 
-
-        //Update the cube with the latest data
-        function update(msg) {
-
-            console.log(msg);
-            console.log(msg.soc_pct);
-            //const batteryInfo = JSON.parse(msg);
-
-            //console.log(batteryInfo.soc_pct);
-            //set(msg.soc_pct);
-
-        }
-
-    </script>
 
 
     <div class="stage" data-init="@get('/batteryStatusStream',{openWhenHidden: true})">
