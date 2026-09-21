@@ -36,16 +36,10 @@ func main() {
 		IntervalSec: *intervalSec,
 	}
 
-	_, err := eg4.GetBatteryInfo(config)
+	err := eg4.GetBatteryInfo(config)
 	if err != nil {
 		return
 	}
-
-	//frames := make(chan frame, 256)
-	//go serialcan.HardwareSource(frames, *channel, *bitrate, *serialBaud, *mode)
-	//
-	//run(frames, *format, time.Duration(*intervalSec*float64(time.Second)))
-
 }
 
 // setupWebServer Setup web server
