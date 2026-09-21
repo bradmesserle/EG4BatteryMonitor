@@ -35,7 +35,7 @@ func main() {
 
 	err := eg4.GetBatteryInfo(config)
 	if err != nil {
-		return
+		//return
 	}
 
 	//Setup web server
