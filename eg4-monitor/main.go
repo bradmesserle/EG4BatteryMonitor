@@ -3,6 +3,9 @@ package main
 import (
 	"context"
 	"flag"
+	"io"
+	"log"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -24,6 +27,28 @@ func main() {
 	intervalSec := flag.Float64("interval", 1.0, "seconds between snapshots (ignored for raw)")
 	flag.Parse()
 
+	//Set up global logging
+	file, openFileError := os.OpenFile("eg4-monitor.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0640)
+	if openFileError != nil {
+		log.Fatalf("Failed to open log file: %v", openFileError)
+	}
+
+	defer func(file *os.File) {
+		fileError := file.Close()
+		if fileError != nil {
+			slog.Info("Failed to close log file: %v", fileError)
+		}
+	}(file)
+
+	// Combine stdout and your file writer
+	multiWriter := io.MultiWriter(os.Stdout, file)
+
+	// Choose JSONHandler or TextHandler based on your preference
+	logger := slog.New(slog.NewTextHandler(multiWriter, nil))
+
+	// Set as global logger (optional)
+	slog.SetDefault(logger)
+
 	//Connect to EG4 Battery VIA Serial Port
 	config := eg4.SerialConfig{
 		Channel:     *channel,
@@ -33,9 +58,10 @@ func main() {
 		IntervalSec: *intervalSec,
 	}
 
-	err := eg4.GetBatteryInfo(config)
-	if err != nil {
+	startBatteryProcessError := eg4.GetBatteryInfo(config)
+	if startBatteryProcessError != nil {
 		//return
+		slog.Info("Failed to start battery process: %v", startBatteryProcessError)
 	}
 
 	//Setup web server
