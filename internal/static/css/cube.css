@@ -62,9 +62,6 @@ body {
     height: calc(var(--h) + var(--w) * 0.7);
     display: grid;
     place-items: center;
-    /*
-    //perspective: 900px;
-     */
 }
 .cube {
     position: relative;
