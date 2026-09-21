@@ -11,7 +11,7 @@
     --glass: rgba(255,255,255,.035);
     --glass-edge: rgba(255,255,255,.16);
 
-    --w: 168px;   /* base width & depth */
+    --w: 150px;   /* base width & depth */
     --h: 260px;   /* box height (taller than wide → vertical rectangle) */
     --p: 0;       /* progress, 0 .. 1  (the one value that drives the fill) */
 
