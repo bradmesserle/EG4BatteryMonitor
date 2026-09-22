@@ -35,6 +35,7 @@ type Row struct {
 	DisVLimit   *float64 `json:"discharge_voltage_limit_v"`
 	Mfr         *string  `json:"manufacturer"`
 	Alarms      string   `json:"alarms"`
+	Mode        *string  `json:"mode"`
 }
 
 const (

@@ -58,9 +58,9 @@ templ Home () {
                     currentElm.textContent = current_ma + 'A';
                 }
 
-                function updateStatus(status) {
-                    const statusElm  = document.getElementById('status');
-                    statusElm.textContent = status;
+                function updateMode(mode) {
+                    const statusElm  = document.getElementById('mode');
+                    statusElm.textContent = mode;
                 }
 
                 function updateDateTime(datetime) {
@@ -78,7 +78,8 @@ templ Home () {
                      updateVoltage(data.pack_voltage_v);
                      updateCurrent(data.pack_current_a);
                      updateDateTime(data.timestamp)
-                    //
+                     updateMode(data.mode);
+
 
                 }
 
@@ -97,7 +98,7 @@ templ Home () {
                         <circle cx="12" cy="12" r="4"/>
                         <path d="M12 1v3M12 20v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M1 12h3M20 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>
                     </svg>
-                    <span class="label" id="status">Standby</span>
+                    <span class="label" id="mode"></span>
                 </div>
 
                 <div class="box">

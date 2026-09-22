@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"strconv"
 	"time"
 
 	"github.com/eg4/battery/monitor/internal"
@@ -42,7 +41,6 @@ func BatteryStatusStreamHandler(c *echo.Context) error {
 				eg4.Row
 			}{Timestamp: time.Now().Format("2006-01-02T15:04:05"), Row: row}
 			byteString, _ := json.Marshal(out)
-			//fmt.Println(string(byteString))
 
 			err := sse.ExecuteScript(fmt.Sprintf("updateFields(%s)", string(byteString)))
 			if err != nil {
@@ -60,35 +58,4 @@ func BatteryStatusStreamHandler(c *echo.Context) error {
 		}
 	}
 
-}
-
-func floatToString(p *float64, dp int) string {
-	if p == nil {
-		return "—"
-	}
-	return fmt.Sprintf("%.*f", dp, *p)
-}
-
-func sendSoc(sse *datastar.ServerSentEventGenerator, row eg4.Row) {
-	socString := strconv.Itoa(*row.SOC)
-	err := sse.ExecuteScript(fmt.Sprintf(`updateSoc("%s")`, socString))
-	if err != nil {
-		log.Println(err)
-	}
-}
-
-func sendVoltage(sse *datastar.ServerSentEventGenerator, row eg4.Row) {
-	voltageString := floatToString(row.PackV, 4)
-	err := sse.ExecuteScript(fmt.Sprintf(`updateVoltage("%s")`, voltageString))
-	if err != nil {
-		log.Println(err)
-	}
-}
-
-func sendCurrent(sse *datastar.ServerSentEventGenerator, row eg4.Row) {
-	voltageString := floatToString(row.PackA, 4)
-	err := sse.ExecuteScript(fmt.Sprintf(`updateCurrent("%s")`, voltageString))
-	if err != nil {
-		log.Println(err)
-	}
 }

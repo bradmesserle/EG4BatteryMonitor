@@ -68,17 +68,35 @@ func dispatch(f serialcan.Frame, s *State) {
 }
 
 func buildRow(s *State) Row {
+
+	// Compute the wattage (Power)
 	var power *int
 	if s.PackV != nil && s.PackA != nil {
 		p := int(math.Round(*s.PackV * *s.PackA))
 		power = &p
 	}
 	alarms := append(append([]string{}, s.Protections...), s.Warnings...)
+
+	//Compute mode
+	mode := ""
+
+	if s.PackA != nil && *s.PackA > 0 {
+		mode = "Charging"
+	}
+
+	if s.PackA != nil && *s.PackA < 0 {
+		mode = "Discharging"
+	}
+
+	if s.PackA != nil && *s.PackA == 0 {
+		mode = "Standby"
+	}
+
 	return Row{
 		SOC: s.SOC, SOH: s.SOH, PackV: s.PackV, PackA: s.PackA,
 		PowerW: power, TempC: s.TempC, ChargeEn: s.ChargeEn,
 		DischargeEn: s.DischargeEn, ChgVLimit: s.ChgVLimit,
 		ChgALimit: s.ChgALimit, DisALimit: s.DisALimit, DisVLimit: s.DisVLimit,
-		Mfr: s.Mfr, Alarms: strings.Join(alarms, ";"),
+		Mfr: s.Mfr, Alarms: strings.Join(alarms, ";"), Mode: &mode,
 	}
 }
