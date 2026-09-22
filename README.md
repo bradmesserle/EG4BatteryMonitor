@@ -7,8 +7,8 @@ The look and feel of the application is inspired by the EG4 Battery Monitor on t
 
 ### Software 
 The software is written in Go and uses system level calls to the serial devices to communicate with the EG4 Battery. <br>
-Due to the nature of the serial communication, the application does not require any third party driveers <br>
-
+Due to the nature of the how the application uses the serial communication, the application does not require any third party software drivers to be installed.<br>
+The software is lightweight and efficient to where you can run it easily on a PI Zero 2W<br>
 
 ### Tested Hardware 
 
