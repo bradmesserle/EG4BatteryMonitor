@@ -24,7 +24,7 @@ CAN Adapters
 
 - Waveshare   [USB-CAN-A](https://www.waveshare.com/usb-can-a.htm?srsltid=AU7gw4XLsG0E8ld7FGMYJiNxbQw2h6UU_ucsldxAkS6mhmqfwa2i8sbC) SKU: 23635 <br>
 
-### Hardware requirements and setup
+### Hardware Requirements and Setup
 
 
 
