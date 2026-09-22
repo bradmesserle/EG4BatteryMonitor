@@ -1,9 +1,11 @@
 package endpoints
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"strconv"
+	"time"
 
 	"github.com/eg4/battery/monitor/internal"
 	"github.com/eg4/battery/monitor/internal/eg4"
@@ -35,14 +37,26 @@ func BatteryStatusStreamHandler(c *echo.Context) error {
 		//Check to see if the SSE connection is still open
 		if !sse.IsClosed() {
 
+			out := struct {
+				Timestamp string `json:"timestamp"`
+				eg4.Row
+			}{Timestamp: time.Now().Format("2006-01-02T15:04:05"), Row: row}
+			byteString, _ := json.Marshal(out)
+			fmt.Println(string(byteString))
+
+			err := sse.ExecuteScript(fmt.Sprintf(`updateFields("%s")`, string(byteString)))
+			if err != nil {
+				log.Println(err)
+			}
+
 			// Send State of Charge
-			sendSoc(sse, row)
+			//sendSoc(sse, row)
 
 			//Send Battery Pack Voltage
-			sendVoltage(sse, row)
+			//sendVoltage(sse, row)
 
 			//Send Battery Pack Current
-			sendCurrent(sse, row)
+			//sendCurrent(sse, row)
 
 		}
 
