@@ -42,9 +42,9 @@ func BatteryStatusStreamHandler(c *echo.Context) error {
 				eg4.Row
 			}{Timestamp: time.Now().Format("2006-01-02T15:04:05"), Row: row}
 			byteString, _ := json.Marshal(out)
-			fmt.Println(string(byteString))
+			//fmt.Println(string(byteString))
 
-			err := sse.ExecuteScript(fmt.Sprintf(`updateFields("%s")`, string(byteString)))
+			err := sse.ExecuteScript(fmt.Sprintf("updateFields(%s)", string(byteString)))
 			if err != nil {
 				log.Println(err)
 			}
