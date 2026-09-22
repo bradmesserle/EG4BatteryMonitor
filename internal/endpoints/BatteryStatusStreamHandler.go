@@ -1,9 +1,12 @@
 package endpoints
 
 import (
+	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
+	"log/slog"
 	"time"
 
 	"github.com/eg4/battery/monitor/internal"
@@ -22,6 +25,9 @@ func BatteryStatusStreamHandler(c *echo.Context) error {
 
 	var in Signals
 	_ = datastar.ReadSignals(c.Request(), &in)
+
+	ctx, cancel := context.WithTimeout(c.Request().Context(), 45*time.Second)
+	defer cancel()
 
 	// NewSSE sets the SSE headers and returns a generator bound to this request.
 	sse := datastar.NewSSE(c.Response(), c.Request())
@@ -53,6 +59,12 @@ func BatteryStatusStreamHandler(c *echo.Context) error {
 
 	for {
 		select {
+		case <-ctx.Done():
+			if errors.Is(ctx.Err(), context.DeadlineExceeded) {
+				slog.Info("SSE Timeout to client")
+				return sse.MarshalAndPatchSignals(map[string]any{"streaming": false})
+			}
+
 		case <-c.Request().Context().Done():
 			return sse.MarshalAndPatchSignals(map[string]any{"streaming": false})
 		}
