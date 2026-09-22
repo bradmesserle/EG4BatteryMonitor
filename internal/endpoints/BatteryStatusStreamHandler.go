@@ -37,7 +37,7 @@ func BatteryStatusStreamHandler(c *echo.Context) error {
 	_ = sse.MarshalAndPatchSignals(map[string]any{"streaming": true})
 
 	//Subscribe to the topic and post on the stream
-	_ = internal.EventBus.Subscribe("batteryStatus", func(row eg4.Row) {
+	eventBusError := internal.EventBus.Subscribe("batteryStatus", func(row eg4.Row) {
 
 		//Check to see if the SSE connection is still open
 		if !sse.IsClosed() {
@@ -57,12 +57,17 @@ func BatteryStatusStreamHandler(c *echo.Context) error {
 
 	})
 
+	if eventBusError != nil {
+		log.Println(eventBusError)
+		return nil
+	}
+
 	for {
 		select {
 		case <-ctx.Done():
 			if errors.Is(ctx.Err(), context.DeadlineExceeded) {
 				slog.Info("SSE Timeout to client")
-				return sse.MarshalAndPatchSignals(map[string]any{"streaming": false})
+				return nil
 			}
 
 		case <-c.Request().Context().Done():
