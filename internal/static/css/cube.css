@@ -222,7 +222,7 @@ rotateY(-90deg) translateZ(calc(var(--w) / 2 - 1px)); }
     background: radial-gradient(circle, rgba(248,113,113,.30), transparent 62%);
 }
 
-@media (max-width: 480px) { :root { --w: 50px; --h: 100px; } }
+@media (max-width: 480px) { :root { --w: 50px; --h: 150px; } }
 
 @media (prefers-reduced-motion: reduce) {
     .bubble { animation: none; opacity: 0; }
