@@ -49,15 +49,6 @@ func BatteryStatusStreamHandler(c *echo.Context) error {
 				log.Println(err)
 			}
 
-			// Send State of Charge
-			//sendSoc(sse, row)
-
-			//Send Battery Pack Voltage
-			//sendVoltage(sse, row)
-
-			//Send Battery Pack Current
-			//sendCurrent(sse, row)
-
 		}
 
 	})

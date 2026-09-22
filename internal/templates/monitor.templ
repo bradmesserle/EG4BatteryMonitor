@@ -63,15 +63,21 @@ templ Home () {
                     statusElm.textContent = status;
                 }
 
+                function updateDateTime(datetime) {
+
+                    const date = new Date(datetime);
+                    console.log(date);
+                    const datetimeElm  = document.getElementById('datetime');
+                    datetimeElm.textContent = date.toDateString() + ' ' + date.toLocaleTimeString();
+                }
+
+
                 function updateFields(data){
 
-                    const batteryData = JSON.parse(data);
-                    console.log(batteryData);
-
-                    // updateSoc(Obejct.soc_pct);
-                    // updateVoltage(Obejct.voltage_mv);
-                    // updateCurrent(Obejct.current_ma);
-                    // updateStatus(Obejct.status);
+                     updateSoc(data.soc_pct);
+                     updateVoltage(data.pack_voltage_v);
+                     updateCurrent(data.pack_current_a);
+                     updateDateTime(data.timestamp)
                     //
 
                 }
