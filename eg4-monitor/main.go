@@ -27,6 +27,32 @@ func main() {
 	intervalSec := flag.Float64("interval", 2.0, "seconds between snapshots (ignored for raw)")
 	flag.Parse()
 
+	//Set up application logging
+	setupLogging()
+
+	//Connect to EG4 Battery VIA Serial Port
+	config := eg4.SerialConfig{
+		Channel:     *channel,
+		Bitrate:     *bitrate,
+		SerialBaud:  *serialBaud,
+		Mode:        *mode,
+		IntervalSec: *intervalSec,
+	}
+
+	startBatteryProcessError := eg4.ConnectToBattery(config)
+	if startBatteryProcessError != nil {
+		//return
+		slog.Info("Failed to start battery process: %v", startBatteryProcessError)
+	}
+
+	//Setup web server
+	setupWebServer()
+
+}
+
+// setupLogging Setup application logging
+func setupLogging() {
+
 	//Set up global logging
 	file, openFileError := os.OpenFile("eg4-monitor.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0640)
 	if openFileError != nil {
@@ -48,24 +74,6 @@ func main() {
 
 	// Set as global logger (optional)
 	slog.SetDefault(logger)
-
-	//Connect to EG4 Battery VIA Serial Port
-	config := eg4.SerialConfig{
-		Channel:     *channel,
-		Bitrate:     *bitrate,
-		SerialBaud:  *serialBaud,
-		Mode:        *mode,
-		IntervalSec: *intervalSec,
-	}
-
-	startBatteryProcessError := eg4.GetBatteryInfo(config)
-	if startBatteryProcessError != nil {
-		//return
-		slog.Info("Failed to start battery process: %v", startBatteryProcessError)
-	}
-
-	//Setup web server
-	setupWebServer()
 
 }
 

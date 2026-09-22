@@ -10,8 +10,8 @@ import (
 	serialcan "github.com/eg4/battery/monitor/internal/serial-can"
 )
 
-// GetBatteryInfo initializes a connection to the CAN bus and processes battery data with the specified serial configuration.
-func GetBatteryInfo(config SerialConfig) error {
+// ConnectToBattery initializes a connection to the CAN bus and processes battery data with the specified serial configuration.
+func ConnectToBattery(config SerialConfig) error {
 
 	frames := make(chan serialcan.Frame, 256)
 	go serialcan.HardwareSource(frames, config.Channel, config.Bitrate, config.SerialBaud, config.Mode)
