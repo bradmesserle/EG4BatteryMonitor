@@ -8,6 +8,7 @@ version=0.0.1
 all: update-dependencies compile-templ build
 
 update-dependencies:
+	go mod download github.com/a-h/templ
 	go mod tidy
 
 compile-templ:
