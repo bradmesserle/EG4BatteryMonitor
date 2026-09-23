@@ -12,6 +12,7 @@ update-dependencies:
 	go get github.com/a-h/templ/parser/v2@v0.3.1020
 	go get github.com/a-h/templ/cmd/templ/generatecmd@v0.3.1020
 	go get github.com/a-h/templ/internal/imports@v0.3.1020
+	go get github.com/a-h/templ/cmd/templ/fmtcmd@v0.3.1020
 	go mod tidy
 
 compile-templ:
