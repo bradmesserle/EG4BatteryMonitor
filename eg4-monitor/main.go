@@ -41,14 +41,17 @@ func main() {
 		IntervalSec: *intervalSec,
 	}
 
-	_, startBatteryProcessError := eg4.ConnectToBattery(config)
+	connected, startBatteryProcessError := eg4.ConnectToBattery(config)
 	if startBatteryProcessError != nil {
 		//return
 		slog.Info("Failed to start battery process: %v", startBatteryProcessError)
 	}
 
-	//Setup web server
-	setupWebServer()
+	//Only start web server if connected to battery
+	if connected {
+		//Setup web server
+		setupWebServer()
+	}
 
 }
 
