@@ -10,24 +10,25 @@ import (
 	"github.com/eg4/battery/monitor/internal"
 	caninterface "github.com/eg4/battery/monitor/internal/can-interface"
 	structs "github.com/eg4/battery/monitor/internal/data-structures"
+	serialcan "github.com/eg4/battery/monitor/internal/serial-can"
 )
 
 // ConnectToBattery initializes a connection to the CAN bus and processes battery data with the specified serial configuration.
 func ConnectToBattery(config structs.SerialConfig) (isconnected bool, err error) {
 
-	connectedChannel := make(chan bool)
-
-	////Try Serial Port first
-	////TODO: loop thru the first 4 USB ports at least
-	////Collect data from the serial port
-	//frames := make(chan structs.Frame, 256)
-	//go serialcan.HardwareSource(frames, config.Channel, config.Bitrate, config.SerialBaud, config.Mode, connectedChannel)
-	//
-	//isconnected = <-connectedChannel
-
 	frames := make(chan structs.Frame, 256)
-	go caninterface.HardwareSource(frames, config.IFace, connectedChannel)
-	isconnected = <-connectedChannel
+
+	//Try connecting to USB.
+	isconnected = tryUsb(config, frames)
+
+	//if we dont connect via USB try CAN
+	if !isconnected {
+		isconnected = tryCANInterface(config, frames)
+	}
+
+	//frames := make(chan structs.Frame, 256)
+	//go caninterface.HardwareSource(frames, config.IFace, connectedChannel)
+	//isconnected = <-connectedChannel
 
 	//Try the can interface
 	//if !isconnected {
@@ -47,6 +48,29 @@ func ConnectToBattery(config structs.SerialConfig) (isconnected bool, err error)
 	})
 
 	return true, nil
+
+}
+
+func tryUsb(config structs.SerialConfig, frames chan structs.Frame) (isconnected bool) {
+
+	connectedChannel := make(chan bool)
+
+	//Try Serial Port first
+	//TODO: loop thru the first 4 USB ports at least
+	//Collect data from the serial port
+	go serialcan.HardwareSource(frames, config.Channel, config.Bitrate, config.SerialBaud, config.Mode, connectedChannel)
+
+	isconnected = <-connectedChannel
+
+	return isconnected
+
+}
+
+func tryCANInterface(config structs.SerialConfig, frames chan structs.Frame) (isconnected bool) {
+	connectedChannel := make(chan bool)
+	go caninterface.HardwareSource(frames, config.IFace, connectedChannel)
+	isconnected = <-connectedChannel
+	return isconnected
 
 }
 
