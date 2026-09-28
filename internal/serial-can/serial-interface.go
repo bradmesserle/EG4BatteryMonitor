@@ -96,6 +96,8 @@ func configFrame(bitrate int, mode string) ([]byte, error) {
 
 func HardwareSource(out chan<- Frame, channel string, bitrate, serialBaud int, mode string, connectedChannel chan bool) {
 
+	fmt.Fprintf(os.Stderr, "Trying to connect via  USB Port: %s @ %d bps CAN (%s)\n", channel, bitrate, mode)
+
 	fd, err := syscall.Open(channel, syscall.O_RDWR|syscall.O_NOCTTY|syscall.O_NONBLOCK, 0)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "open %s failed: %v\n", channel, err)
