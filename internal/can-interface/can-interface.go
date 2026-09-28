@@ -39,6 +39,9 @@ type ifreq struct {
 }
 
 func HardwareSource(out chan<- structs.Frame, iface string, connectedChannel chan bool) {
+
+	fmt.Fprintf(os.Stderr, "Trying to connect to CAN Interface: %s (SocketCAN)\n", iface)
+
 	fd, err := openCAN(iface)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
@@ -49,6 +52,7 @@ func HardwareSource(out chan<- structs.Frame, iface string, connectedChannel cha
 	f := os.NewFile(uintptr(fd), iface) // integrates with Go's runtime poller
 	defer f.Close()
 	fmt.Fprintf(os.Stderr, "connected: %s (SocketCAN)\n", iface)
+	connectedChannel <- true
 
 	buf := make([]byte, 72) // large enough for CAN FD too; classic frames are 16
 	for {
