@@ -68,6 +68,7 @@ var warnBits = []bitLabel{
 
 type SerialConfig struct {
 	Channel     string
+	IFace       string
 	Bitrate     int
 	SerialBaud  int
 	Mode        string

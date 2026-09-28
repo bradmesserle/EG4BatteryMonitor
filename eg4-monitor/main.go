@@ -21,6 +21,7 @@ import (
 func main() {
 
 	channel := flag.String("channel", "/dev/ttyUSB0", "adapter serial device")
+	iface := flag.String("interface", "can0", "SocketCAN interface to read (e.g. can0)")
 	bitrate := flag.Int("bitrate", 500000, "CAN bitrate (EG4 = 500000)")
 	serialBaud := flag.Int("serial-baud", 2000000, "adapter USB serial baud")
 	mode := flag.String("mode", "silent", "silent = listen-only (safe); normal = also ACK")
@@ -33,6 +34,7 @@ func main() {
 	//Connect to EG4 Battery VIA Serial Port
 	config := eg4.SerialConfig{
 		Channel:     *channel,
+		IFace:       *iface,
 		Bitrate:     *bitrate,
 		SerialBaud:  *serialBaud,
 		Mode:        *mode,

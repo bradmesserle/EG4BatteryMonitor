@@ -94,19 +94,23 @@ func configFrame(bitrate int, mode string) ([]byte, error) {
 	return append(m, sum), nil
 }
 
-func HardwareSource(out chan<- Frame, channel string, bitrate, serialBaud int, mode string) {
+func HardwareSource(out chan<- Frame, channel string, bitrate, serialBaud int, mode string, connectedChannel chan bool) {
+
 	fd, err := syscall.Open(channel, syscall.O_RDWR|syscall.O_NOCTTY|syscall.O_NONBLOCK, 0)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "open %s failed: %v\n", channel, err)
 		close(out)
+		connectedChannel <- false
 		return
 	}
 	if err := configureSerial(fd, uint32(serialBaud)); err != nil {
 		fmt.Fprintf(os.Stderr, "configure failed: %v\n", err)
 		syscall.Close(fd)
 		close(out)
+		connectedChannel <- false
 		return
 	}
+
 	f := os.NewFile(uintptr(fd), channel)
 	defer f.Close()
 
@@ -115,11 +119,13 @@ func HardwareSource(out chan<- Frame, channel string, bitrate, serialBaud int, m
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
 		close(out)
+		connectedChannel <- false
 		return
 	}
 	if _, err := f.Write(cfg); err != nil {
 		fmt.Fprintf(os.Stderr, "write init frame failed: %v\n", err)
 		close(out)
+		connectedChannel <- false
 		return
 	}
 	fmt.Fprintf(os.Stderr, "connected: %s @ %d bps CAN (%s)\n", channel, bitrate, mode)
@@ -172,4 +178,5 @@ func HardwareSource(out chan<- Frame, channel string, bitrate, serialBaud int, m
 		}
 		out <- Frame{id, data}
 	}
+
 }

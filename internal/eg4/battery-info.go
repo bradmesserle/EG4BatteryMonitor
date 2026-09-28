@@ -1,6 +1,7 @@
 package eg4
 
 import (
+	"errors"
 	"math"
 	"strings"
 	"sync"
@@ -11,10 +12,20 @@ import (
 )
 
 // ConnectToBattery initializes a connection to the CAN bus and processes battery data with the specified serial configuration.
-func ConnectToBattery(config SerialConfig) error {
+func ConnectToBattery(config SerialConfig) (isconnected bool, err error) {
 
+	connectedChannel := make(chan bool)
+
+	//Try Serial Port first
+	//Collect data from the serial port
 	frames := make(chan serialcan.Frame, 256)
-	go serialcan.HardwareSource(frames, config.Channel, config.Bitrate, config.SerialBaud, config.Mode)
+	go serialcan.HardwareSource(frames, config.Channel, config.Bitrate, config.SerialBaud, config.Mode, connectedChannel)
+
+	isconnected = <-connectedChannel
+
+	if !isconnected {
+		return false, errors.New("failed to connect to battery")
+	}
 
 	//Start the battery monitoring process
 	var wg sync.WaitGroup
@@ -22,7 +33,7 @@ func ConnectToBattery(config SerialConfig) error {
 		run(frames, time.Duration(config.IntervalSec*float64(time.Second)))
 	})
 
-	return nil
+	return true, nil
 
 }
 
