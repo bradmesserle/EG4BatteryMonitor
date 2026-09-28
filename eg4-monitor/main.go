@@ -12,8 +12,10 @@ import (
 	"syscall"
 
 	"github.com/eg4/battery/monitor/internal"
+	"github.com/eg4/battery/monitor/internal/data-structures"
 	"github.com/eg4/battery/monitor/internal/eg4"
 	"github.com/eg4/battery/monitor/internal/endpoints"
+
 	"github.com/labstack/echo/v5"
 	"github.com/labstack/echo/v5/middleware"
 )
@@ -32,7 +34,7 @@ func main() {
 	setupLogging()
 
 	//Connect to EG4 Battery VIA Serial Port
-	config := eg4.SerialConfig{
+	config := data_structures.SerialConfig{
 		Channel:     *channel,
 		IFace:       *iface,
 		Bitrate:     *bitrate,
