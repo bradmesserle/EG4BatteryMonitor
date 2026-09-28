@@ -41,7 +41,7 @@ func main() {
 		IntervalSec: *intervalSec,
 	}
 
-	startBatteryProcessError := eg4.ConnectToBattery(config)
+	_, startBatteryProcessError := eg4.ConnectToBattery(config)
 	if startBatteryProcessError != nil {
 		//return
 		slog.Info("Failed to start battery process: %v", startBatteryProcessError)
