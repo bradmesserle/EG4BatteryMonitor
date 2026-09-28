@@ -19,11 +19,13 @@ func ConnectToBattery(config structs.SerialConfig) (isconnected bool, err error)
 	frames := make(chan structs.Frame, 256)
 
 	//Try connecting to USB.
-	isconnected = tryUsb(config, frames)
+	//isconnected = tryUsb(config, frames)
 
 	//if we dont connect via USB try CAN
-	if !isconnected {
-		isconnected = tryCANInterface(config, frames)
+	canConnect := canConnectViaCAN(config)
+
+	if canConnect {
+		go caninterface.HardwareSource(frames, config.IFace)
 	}
 
 	//frames := make(chan structs.Frame, 256)
@@ -37,7 +39,7 @@ func ConnectToBattery(config structs.SerialConfig) (isconnected bool, err error)
 	//	isconnected = <-connectedChannel
 	//}
 
-	if !isconnected {
+	if !canConnect {
 		return false, errors.New("failed to connect to battery")
 	}
 
@@ -66,12 +68,11 @@ func tryUsb(config structs.SerialConfig, frames chan structs.Frame) (isconnected
 
 }
 
-func tryCANInterface(config structs.SerialConfig, frames chan structs.Frame) (isconnected bool) {
+func canConnectViaCAN(config structs.SerialConfig) (canConnect bool) {
 	connectedChannel := make(chan bool)
-	go caninterface.HardwareSource(frames, config.IFace, connectedChannel)
-	isconnected = <-connectedChannel
-	return isconnected
-
+	go caninterface.TestPort(config.IFace, connectedChannel)
+	canConnect = <-connectedChannel
+	return canConnect
 }
 
 // run processes incoming CAN frames from the channel, updates state, and periodically publishes summarized data.

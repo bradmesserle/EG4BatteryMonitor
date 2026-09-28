@@ -38,21 +38,36 @@ type ifreq struct {
 	_     [20]byte
 }
 
-func HardwareSource(out chan<- structs.Frame, iface string, connectedChannel chan bool) {
+// TestPort checks the connectivity status of the specified network interface and sends the result to the provided channel.
+func TestPort(iface string, connectedChannel chan bool) {
 
 	fmt.Fprintf(os.Stderr, "Trying to connect to CAN Interface: %s (SocketCAN)\n", iface)
 
 	fd, err := openCAN(iface)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
-		close(out)
 		connectedChannel <- false
+		return
+	}
+
+	f := os.NewFile(uintptr(fd), iface) // integrates with Go's runtime poller
+	defer f.Close()
+	fmt.Fprintf(os.Stderr, "connected: %s (SocketCAN)\n", iface)
+	connectedChannel <- true
+
+}
+
+func HardwareSource(out chan<- structs.Frame, iface string) {
+
+	fd, err := openCAN(iface)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+		close(out)
 		return
 	}
 	f := os.NewFile(uintptr(fd), iface) // integrates with Go's runtime poller
 	defer f.Close()
 	fmt.Fprintf(os.Stderr, "connected: %s (SocketCAN)\n", iface)
-	connectedChannel <- true
 
 	buf := make([]byte, 72) // large enough for CAN FD too; classic frames are 16
 	for {
@@ -60,7 +75,6 @@ func HardwareSource(out chan<- structs.Frame, iface string, connectedChannel cha
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "read error: %v\n", err)
 			close(out)
-			connectedChannel <- false
 			return
 		}
 		if n < canFrameLen {
@@ -71,10 +85,7 @@ func HardwareSource(out chan<- structs.Frame, iface string, connectedChannel cha
 		if rawID&canERRFlag != 0 {
 			continue // error frame, not real bus data
 		}
-		dlc := int(buf[4] & 0x0F)
-		if dlc > 8 {
-			dlc = 8
-		}
+		dlc := min(int(buf[4]&0x0F), 8)
 		var id uint32
 		if rawID&canEFFFlag != 0 {
 			id = rawID & canEFFMask
@@ -83,7 +94,7 @@ func HardwareSource(out chan<- structs.Frame, iface string, connectedChannel cha
 		}
 		data := make([]byte, dlc)
 		copy(data, buf[8:8+dlc])
-		out <- structs.Frame{id, data}
+		out <- structs.Frame{Id: id, Data: data}
 	}
 }
 
