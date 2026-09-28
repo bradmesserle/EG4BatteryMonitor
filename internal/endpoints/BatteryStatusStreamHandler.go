@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/eg4/battery/monitor/internal"
-	"github.com/eg4/battery/monitor/internal/eg4"
+	"github.com/eg4/battery/monitor/internal/data-structures"
 	"github.com/labstack/echo/v5"
 	"github.com/starfederation/datastar-go/datastar"
 )
@@ -37,14 +37,14 @@ func BatteryStatusStreamHandler(c *echo.Context) error {
 	_ = sse.MarshalAndPatchSignals(map[string]any{"streaming": true})
 
 	//Subscribe to the topic and post on the stream
-	eventBusError := internal.EventBus.Subscribe("batteryStatus", func(row eg4.Row) {
+	eventBusError := internal.EventBus.Subscribe("batteryStatus", func(row data_structures.Row) {
 
 		//Check to see if the SSE connection is still open
 		if !sse.IsClosed() {
 
 			out := struct {
 				Timestamp string `json:"timestamp"`
-				eg4.Row
+				data_structures.Row
 			}{Timestamp: time.Now().Format("2006-01-02T15:04:05"), Row: row}
 			byteString, _ := json.Marshal(out)
 
