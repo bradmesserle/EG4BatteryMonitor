@@ -1,4 +1,4 @@
-package eg4
+package data_structures
 
 // State ---------------------------------------------------------------------------
 // State: merged accumulator. Pointer fields = "not yet seen" (nil).
@@ -39,28 +39,28 @@ type Row struct {
 }
 
 const (
-	canLimits   = 0x351
-	canSOCSOH   = 0x355
-	canMeasure  = 0x356
-	canAlarms   = 0x359
-	canReqFlags = 0x35C
-	canMfr      = 0x35E
+	CanLimits   = 0x351
+	CanSOCSOH   = 0x355
+	CanMeasure  = 0x356
+	CanAlarms   = 0x359
+	CanReqFlags = 0x35C
+	CanMfr      = 0x35E
 )
 
-type bitLabel struct {
-	idx  int
-	mask byte
-	name string
+type BitLabel struct {
+	Idx  int
+	Mask byte
+	Name string
 }
 
-var protBits = []bitLabel{
+var ProtBits = []BitLabel{
 	{0, 0x02, "over_voltage"}, {0, 0x04, "under_voltage"},
 	{0, 0x08, "over_temp"}, {0, 0x10, "under_temp"},
 	{0, 0x80, "discharge_overcurrent"},
 	{1, 0x01, "charge_overcurrent"}, {1, 0x08, "bms_internal"},
 	{1, 0x10, "cell_imbalance"},
 }
-var warnBits = []bitLabel{
+var WarnBits = []BitLabel{
 	{2, 0x02, "over_voltage_warn"}, {2, 0x04, "under_voltage_warn"},
 	{2, 0x08, "over_temp_warn"}, {2, 0x10, "under_temp_warn"},
 	{3, 0x01, "charge_overcurrent_warn"}, {3, 0x80, "discharge_overcurrent_warn"},
@@ -73,4 +73,9 @@ type SerialConfig struct {
 	SerialBaud  int
 	Mode        string
 	IntervalSec float64
+}
+
+type Frame struct {
+	Id   uint32
+	Data []byte
 }

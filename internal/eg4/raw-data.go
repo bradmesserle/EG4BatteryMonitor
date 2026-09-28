@@ -3,6 +3,8 @@ package eg4
 import (
 	"encoding/binary"
 	"strings"
+
+	structs "github.com/eg4/battery/monitor/internal/data-structures"
 )
 
 // bounds-checked little-endian readers
@@ -23,11 +25,11 @@ func fp(v float64) *float64 { return &v }
 func bp(v bool) *bool       { return &v }
 func sp(v string) *string   { return &v }
 
-func bits(d []byte, table []bitLabel) []string {
+func bits(d []byte, table []structs.BitLabel) []string {
 	out := []string{}
 	for _, b := range table {
-		if len(d) > b.idx && d[b.idx]&b.mask != 0 {
-			out = append(out, b.name)
+		if len(d) > b.Idx && d[b.Idx]&b.Mask != 0 {
+			out = append(out, b.Name)
 		}
 	}
 	return out
@@ -36,7 +38,7 @@ func bits(d []byte, table []bitLabel) []string {
 // ---------------------------------------------------------------------------
 // Decoders: mutate *State only for fields present in this frame.
 // ---------------------------------------------------------------------------
-func decodeLimits(d []byte, s *State) {
+func decodeLimits(d []byte, s *structs.State) {
 	if v, ok := u16(d, 0); ok {
 		s.ChgVLimit = fp(float64(v) / 10)
 	}
@@ -51,7 +53,7 @@ func decodeLimits(d []byte, s *State) {
 	}
 }
 
-func decodeSOCSOH(d []byte, s *State) {
+func decodeSOCSOH(d []byte, s *structs.State) {
 	if v, ok := u16(d, 0); ok {
 		s.SOC = ip(int(v))
 	}
@@ -60,7 +62,7 @@ func decodeSOCSOH(d []byte, s *State) {
 	}
 }
 
-func decodeMeasure(d []byte, s *State) {
+func decodeMeasure(d []byte, s *structs.State) {
 	if v, ok := u16(d, 0); ok {
 		s.PackV = fp(float64(v) / 100)
 	}
@@ -72,12 +74,12 @@ func decodeMeasure(d []byte, s *State) {
 	}
 }
 
-func decodeAlarms(d []byte, s *State) {
-	s.Protections = bits(d, protBits)
-	s.Warnings = bits(d, warnBits)
+func decodeAlarms(d []byte, s *structs.State) {
+	s.Protections = bits(d, structs.ProtBits)
+	s.Warnings = bits(d, structs.WarnBits)
 }
 
-func decodeReqFlags(d []byte, s *State) {
+func decodeReqFlags(d []byte, s *structs.State) {
 	var b0 byte
 	if len(d) > 0 {
 		b0 = d[0]
@@ -86,6 +88,6 @@ func decodeReqFlags(d []byte, s *State) {
 	s.DischargeEn = bp(b0&0x40 != 0)
 }
 
-func decodeMfr(d []byte, s *State) {
+func decodeMfr(d []byte, s *structs.State) {
 	s.Mfr = sp(strings.TrimRight(string(d), " \x00"))
 }

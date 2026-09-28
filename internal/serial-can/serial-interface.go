@@ -8,6 +8,8 @@ import (
 	"os"
 	"syscall"
 	"unsafe"
+
+	structs "github.com/eg4/battery/monitor/internal/data-structures"
 )
 
 // ---- Waveshare USB-CAN-A serial link (Linux termios2 for 2 Mbaud) ----------
@@ -17,14 +19,6 @@ const (
 	bother  = 0x1000
 	cbaud   = 0x100F
 )
-
-// Frame ---------------------------------------------------------------------------
-// Frame CAN Data Frame
-// ---------------------------------------------------------------------------
-type Frame struct {
-	Id   uint32
-	Data []byte
-}
 
 type termios2 struct {
 	Iflag, Oflag, Cflag, Lflag uint32
@@ -94,7 +88,7 @@ func configFrame(bitrate int, mode string) ([]byte, error) {
 	return append(m, sum), nil
 }
 
-func HardwareSource(out chan<- Frame, channel string, bitrate, serialBaud int, mode string, connectedChannel chan bool) {
+func HardwareSource(out chan<- structs.Frame, channel string, bitrate, serialBaud int, mode string, connectedChannel chan bool) {
 
 	fmt.Fprintf(os.Stderr, "Trying to connect via  USB Port: %s @ %d bps CAN (%s)\n", channel, bitrate, mode)
 
@@ -178,7 +172,7 @@ func HardwareSource(out chan<- Frame, channel string, bitrate, serialBaud int, m
 		if err != nil || end != 0x55 {
 			continue // framing error -> resync
 		}
-		out <- Frame{id, data}
+		out <- structs.Frame{id, data}
 	}
 
 }

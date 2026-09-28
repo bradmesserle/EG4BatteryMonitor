@@ -8,20 +8,28 @@ import (
 	"time"
 
 	"github.com/eg4/battery/monitor/internal"
+	caninterface "github.com/eg4/battery/monitor/internal/can-interface"
+	structs "github.com/eg4/battery/monitor/internal/data-structures"
 	serialcan "github.com/eg4/battery/monitor/internal/serial-can"
 )
 
 // ConnectToBattery initializes a connection to the CAN bus and processes battery data with the specified serial configuration.
-func ConnectToBattery(config SerialConfig) (isconnected bool, err error) {
+func ConnectToBattery(config structs.SerialConfig) (isconnected bool, err error) {
 
 	connectedChannel := make(chan bool)
 
 	//Try Serial Port first
+	//TODO: loop thru the first 4 USB ports at least
 	//Collect data from the serial port
-	frames := make(chan serialcan.Frame, 256)
+	frames := make(chan structs.Frame, 256)
 	go serialcan.HardwareSource(frames, config.Channel, config.Bitrate, config.SerialBaud, config.Mode, connectedChannel)
 
 	isconnected = <-connectedChannel
+
+	//Try the can interface
+	if !isconnected {
+		go caninterface.HardwareSource(frames, config.IFace, connectedChannel)
+	}
 
 	if !isconnected {
 		return false, errors.New("failed to connect to battery")
@@ -38,8 +46,8 @@ func ConnectToBattery(config SerialConfig) (isconnected bool, err error) {
 }
 
 // run processes incoming CAN frames from the channel, updates state, and periodically publishes summarized data.
-func run(frames <-chan serialcan.Frame, interval time.Duration) {
-	var state State
+func run(frames <-chan structs.Frame, interval time.Duration) {
+	var state structs.State
 
 	ticker := time.NewTicker(interval)
 	defer ticker.Stop()
@@ -57,28 +65,28 @@ func run(frames <-chan serialcan.Frame, interval time.Duration) {
 }
 
 // publish sends summarized data to the front end. Posting the data is done via the internal.EventBus.
-func publish(row Row) {
+func publish(row structs.Row) {
 	internal.EventBus.Publish("batteryStatus", row)
 }
 
-func dispatch(f serialcan.Frame, s *State) {
+func dispatch(f structs.Frame, s *structs.State) {
 	switch f.Id {
-	case canLimits:
+	case structs.CanLimits:
 		decodeLimits(f.Data, s)
-	case canSOCSOH:
+	case structs.CanSOCSOH:
 		decodeSOCSOH(f.Data, s)
-	case canMeasure:
+	case structs.CanMeasure:
 		decodeMeasure(f.Data, s)
-	case canAlarms:
+	case structs.CanAlarms:
 		decodeAlarms(f.Data, s)
-	case canReqFlags:
+	case structs.CanReqFlags:
 		decodeReqFlags(f.Data, s)
-	case canMfr:
+	case structs.CanMfr:
 		decodeMfr(f.Data, s)
 	}
 }
 
-func buildRow(s *State) Row {
+func buildRow(s *structs.State) structs.Row {
 
 	// Compute the wattage (Power)
 	var power *int
@@ -103,7 +111,7 @@ func buildRow(s *State) Row {
 		mode = "Standby"
 	}
 
-	return Row{
+	return structs.Row{
 		SOC: s.SOC, SOH: s.SOH, PackV: s.PackV, PackA: s.PackA,
 		PowerW: power, TempC: s.TempC, ChargeEn: s.ChargeEn,
 		DischargeEn: s.DischargeEn, ChgVLimit: s.ChgVLimit,
