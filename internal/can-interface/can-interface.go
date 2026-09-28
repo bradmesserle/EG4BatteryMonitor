@@ -39,21 +39,20 @@ type ifreq struct {
 }
 
 // TestPort checks the connectivity status of the specified network interface and sends the result to the provided channel.
-func TestPort(iface string, connectedChannel chan bool) {
+func TestPort(iface string, canConnect chan bool) {
 
 	fmt.Fprintf(os.Stderr, "Trying to connect to CAN Interface: %s (SocketCAN)\n", iface)
 
 	fd, err := openCAN(iface)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
-		connectedChannel <- false
+		canConnect <- false
 		return
 	}
 
 	f := os.NewFile(uintptr(fd), iface) // integrates with Go's runtime poller
 	defer f.Close()
-	fmt.Fprintf(os.Stderr, "connected: %s (SocketCAN)\n", iface)
-	connectedChannel <- true
+	canConnect <- true
 
 }
 

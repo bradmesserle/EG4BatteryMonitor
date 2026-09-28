@@ -19,10 +19,14 @@ func ConnectToBattery(config structs.SerialConfig) (isconnected bool, err error)
 	frames := make(chan structs.Frame, 256)
 
 	//Try connecting to USB.
-	//isconnected = tryUsb(config, frames)
+	canConnect := canConnectViaUSB(config)
+
+	if canConnect {
+		go serialcan.HardwareSource(frames, config.Channel, config.Bitrate, config.SerialBaud, config.Mode)
+	}
 
 	//if we dont connect via USB try CAN
-	canConnect := canConnectViaCAN(config)
+	canConnect = canConnectViaCAN(config)
 
 	if canConnect {
 		go caninterface.HardwareSource(frames, config.IFace)
@@ -53,18 +57,12 @@ func ConnectToBattery(config structs.SerialConfig) (isconnected bool, err error)
 
 }
 
-func tryUsb(config structs.SerialConfig, frames chan structs.Frame) (isconnected bool) {
+func canConnectViaUSB(config structs.SerialConfig) (canConnect bool) {
 
 	connectedChannel := make(chan bool)
-
-	//Try Serial Port first
-	//TODO: loop thru the first 4 USB ports at least
-	//Collect data from the serial port
-	go serialcan.HardwareSource(frames, config.Channel, config.Bitrate, config.SerialBaud, config.Mode, connectedChannel)
-
-	isconnected = <-connectedChannel
-
-	return isconnected
+	go serialcan.TestPort(config.Channel, config.Bitrate, config.SerialBaud, config.Mode, connectedChannel)
+	canConnect = <-connectedChannel
+	return canConnect
 
 }
 

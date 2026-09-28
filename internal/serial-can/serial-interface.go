@@ -88,22 +88,54 @@ func configFrame(bitrate int, mode string) ([]byte, error) {
 	return append(m, sum), nil
 }
 
-func HardwareSource(out chan<- structs.Frame, channel string, bitrate, serialBaud int, mode string, connectedChannel chan bool) {
+func TestPort(channel string, bitrate, serialBaud int, mode string, canConnect chan bool) {
 
 	fmt.Fprintf(os.Stderr, "Trying to connect via  USB Port: %s @ %d bps CAN (%s)\n", channel, bitrate, mode)
 
 	fd, err := syscall.Open(channel, syscall.O_RDWR|syscall.O_NOCTTY|syscall.O_NONBLOCK, 0)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "open %s failed: %v\n", channel, err)
+		canConnect <- false
+		return
+	}
+	if err := configureSerial(fd, uint32(serialBaud)); err != nil {
+		fmt.Fprintf(os.Stderr, "configure failed: %v\n", err)
+		syscall.Close(fd)
+		canConnect <- false
+		return
+	}
+
+	f := os.NewFile(uintptr(fd), channel)
+	defer f.Close()
+
+	// Send the adapter init/config frame (sets CAN bitrate + mode).
+	cfg, err := configFrame(bitrate, mode)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+		canConnect <- false
+		return
+	}
+	if _, err := f.Write(cfg); err != nil {
+		fmt.Fprintf(os.Stderr, "write init frame failed: %v\n", err)
+		canConnect <- false
+		return
+	}
+	canConnect <- true
+
+}
+
+func HardwareSource(out chan<- structs.Frame, channel string, bitrate, serialBaud int, mode string) {
+
+	fd, err := syscall.Open(channel, syscall.O_RDWR|syscall.O_NOCTTY|syscall.O_NONBLOCK, 0)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "open %s failed: %v\n", channel, err)
 		close(out)
-		connectedChannel <- false
 		return
 	}
 	if err := configureSerial(fd, uint32(serialBaud)); err != nil {
 		fmt.Fprintf(os.Stderr, "configure failed: %v\n", err)
 		syscall.Close(fd)
 		close(out)
-		connectedChannel <- false
 		return
 	}
 
@@ -115,13 +147,11 @@ func HardwareSource(out chan<- structs.Frame, channel string, bitrate, serialBau
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
 		close(out)
-		connectedChannel <- false
 		return
 	}
 	if _, err := f.Write(cfg); err != nil {
 		fmt.Fprintf(os.Stderr, "write init frame failed: %v\n", err)
 		close(out)
-		connectedChannel <- false
 		return
 	}
 	fmt.Fprintf(os.Stderr, "connected: %s @ %d bps CAN (%s)\n", channel, bitrate, mode)
@@ -172,7 +202,7 @@ func HardwareSource(out chan<- structs.Frame, channel string, bitrate, serialBau
 		if err != nil || end != 0x55 {
 			continue // framing error -> resync
 		}
-		out <- structs.Frame{id, data}
+		out <- structs.Frame{Id: id, Data: data}
 	}
 
 }
