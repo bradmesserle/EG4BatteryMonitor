@@ -16,7 +16,6 @@ const (
 	canRAW       = 1      // CAN_RAW protocol
 	siocGIFINDEX = 0x8933 // ioctl: name -> ifindex
 	canEFFFlag   = 0x80000000
-	canRTRFlag   = 0x40000000
 	canERRFlag   = 0x20000000
 	canEFFMask   = 0x1FFFFFFF
 	canSFFMask   = 0x000007FF
@@ -41,17 +40,22 @@ type ifreq struct {
 // TestPort checks the connectivity status of the specified network interface and sends the result to the provided channel.
 func TestPort(iface string, canConnect chan bool) {
 
-	fmt.Fprintf(os.Stderr, "Trying to connect to CAN Interface: %s (SocketCAN)\n", iface)
+	_, _ = fmt.Fprintf(os.Stderr, "Trying to connect to CAN Interface: %s (SocketCAN)\n", iface)
 
 	fd, err := openCAN(iface)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "%v\n", err)
+		_, _ = fmt.Fprintf(os.Stderr, "%v\n", err)
 		canConnect <- false
 		return
 	}
 
 	f := os.NewFile(uintptr(fd), iface) // integrates with Go's runtime poller
-	defer f.Close()
+	defer func(f *os.File) {
+		err := f.Close()
+		if err != nil {
+			_, _ = fmt.Fprintf(os.Stderr, "Error closing file: %v\n", err)
+		}
+	}(f)
 	canConnect <- true
 
 }
@@ -60,19 +64,24 @@ func HardwareSource(out chan<- structs.Frame, iface string) {
 
 	fd, err := openCAN(iface)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "%v\n", err)
+		_, _ = fmt.Fprintf(os.Stderr, "%v\n", err)
 		close(out)
 		return
 	}
 	f := os.NewFile(uintptr(fd), iface) // integrates with Go's runtime poller
-	defer f.Close()
-	fmt.Fprintf(os.Stderr, "connected: %s (SocketCAN)\n", iface)
+	defer func(f *os.File) {
+		err := f.Close()
+		if err != nil {
+			_, _ = fmt.Fprintf(os.Stderr, "Error closing file: %v\n", err)
+		}
+	}(f)
+	_, _ = fmt.Fprintf(os.Stderr, "connected: %s (SocketCAN)\n", iface)
 
 	buf := make([]byte, 72) // large enough for CAN FD too; classic frames are 16
 	for {
 		n, err := f.Read(buf)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "read error: %v\n", err)
+			_, _ = fmt.Fprintf(os.Stderr, "read error: %v\n", err)
 			close(out)
 			return
 		}
@@ -104,14 +113,20 @@ func openCAN(iface string) (int, error) {
 	}
 	idx, err := ifIndex(fd, iface)
 	if err != nil {
-		syscall.Close(fd)
+		err := syscall.Close(fd)
+		if err != nil {
+			return 0, err
+		}
 		return -1, fmt.Errorf("interface %q: %w", iface, err)
 	}
 	sa := sockaddrCAN{family: afCAN, ifindex: idx}
 	_, _, e := syscall.Syscall(syscall.SYS_BIND, uintptr(fd),
 		uintptr(unsafe.Pointer(&sa)), unsafe.Sizeof(sa))
 	if e != 0 {
-		syscall.Close(fd)
+		err := syscall.Close(fd)
+		if err != nil {
+			return 0, err
+		}
 		return -1, fmt.Errorf("bind %q: %w", iface, e)
 	}
 	return fd, nil

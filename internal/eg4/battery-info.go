@@ -13,7 +13,7 @@ import (
 	serialcan "github.com/eg4/battery/monitor/internal/serial-can"
 )
 
-// ConnectToBattery initializes a connection to the CAN bus and processes battery data with the specified serial configuration.
+// ConnectToBattery initializes a connection to the CAN bus and processes battery info data
 func ConnectToBattery(config structs.SerialConfig) (isconnected bool, err error) {
 
 	frames := make(chan structs.Frame, 256)
@@ -32,17 +32,6 @@ func ConnectToBattery(config structs.SerialConfig) (isconnected bool, err error)
 		go caninterface.HardwareSource(frames, config.IFace)
 	}
 
-	//frames := make(chan structs.Frame, 256)
-	//go caninterface.HardwareSource(frames, config.IFace, connectedChannel)
-	//isconnected = <-connectedChannel
-
-	//Try the can interface
-	//if !isconnected {
-	//	frames := make(chan structs.Frame, 256)
-	//	go caninterface.HardwareSource(frames, config.IFace, connectedChannel)
-	//	isconnected = <-connectedChannel
-	//}
-
 	if !canConnect {
 		return false, errors.New("failed to connect to battery")
 	}
@@ -57,6 +46,7 @@ func ConnectToBattery(config structs.SerialConfig) (isconnected bool, err error)
 
 }
 
+// canConnectViaUSB checks if a connection can be established via a USB serial interface using the provided configuration.
 func canConnectViaUSB(config structs.SerialConfig) (canConnect bool) {
 
 	connectedChannel := make(chan bool)
@@ -66,6 +56,7 @@ func canConnectViaUSB(config structs.SerialConfig) (canConnect bool) {
 
 }
 
+// canConnectViaCAN checks if a connection can be established via a CAN interface using the provided configuration.
 func canConnectViaCAN(config structs.SerialConfig) (canConnect bool) {
 	connectedChannel := make(chan bool)
 	go caninterface.TestPort(config.IFace, connectedChannel)
