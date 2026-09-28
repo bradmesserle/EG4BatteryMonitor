@@ -29,6 +29,7 @@ func ConnectToBattery(config structs.SerialConfig) (isconnected bool, err error)
 	//Try the can interface
 	if !isconnected {
 		go caninterface.HardwareSource(frames, config.IFace, connectedChannel)
+		isconnected = <-connectedChannel
 	}
 
 	if !isconnected {
