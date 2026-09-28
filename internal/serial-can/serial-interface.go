@@ -90,33 +90,38 @@ func configFrame(bitrate int, mode string) ([]byte, error) {
 
 func TestPort(channel string, bitrate, serialBaud int, mode string, canConnect chan bool) {
 
-	fmt.Fprintf(os.Stderr, "Trying to connect via  USB Port: %s @ %d bps CAN (%s)\n", channel, bitrate, mode)
+	_, _ = fmt.Fprintf(os.Stderr, "Trying to connect via  USB Port: %s @ %d bps CAN (%s)\n", channel, bitrate, mode)
 
 	fd, err := syscall.Open(channel, syscall.O_RDWR|syscall.O_NOCTTY|syscall.O_NONBLOCK, 0)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "open %s failed: %v\n", channel, err)
+		_, _ = fmt.Fprintf(os.Stderr, "open %s failed: %v\n", channel, err)
 		canConnect <- false
 		return
 	}
 	if err := configureSerial(fd, uint32(serialBaud)); err != nil {
-		fmt.Fprintf(os.Stderr, "configure failed: %v\n", err)
-		syscall.Close(fd)
+		_, _ = fmt.Fprintf(os.Stderr, "configure failed: %v\n", err)
+		_ = syscall.Close(fd)
 		canConnect <- false
 		return
 	}
 
 	f := os.NewFile(uintptr(fd), channel)
-	defer f.Close()
+	defer func(f *os.File) {
+		err := f.Close()
+		if err != nil {
+			_, _ = fmt.Fprintf(os.Stderr, "close failed: %v\n", err)
+		}
+	}(f)
 
 	// Send the adapter init/config frame (sets CAN bitrate + mode).
 	cfg, err := configFrame(bitrate, mode)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "%v\n", err)
+		_, _ = fmt.Fprintf(os.Stderr, "%v\n", err)
 		canConnect <- false
 		return
 	}
 	if _, err := f.Write(cfg); err != nil {
-		fmt.Fprintf(os.Stderr, "write init frame failed: %v\n", err)
+		_, _ = fmt.Fprintf(os.Stderr, "write init frame failed: %v\n", err)
 		canConnect <- false
 		return
 	}
@@ -128,40 +133,42 @@ func HardwareSource(out chan<- structs.Frame, channel string, bitrate, serialBau
 
 	fd, err := syscall.Open(channel, syscall.O_RDWR|syscall.O_NOCTTY|syscall.O_NONBLOCK, 0)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "open %s failed: %v\n", channel, err)
+		_, _ = fmt.Fprintf(os.Stderr, "open %s failed: %v\n", channel, err)
 		close(out)
 		return
 	}
 	if err := configureSerial(fd, uint32(serialBaud)); err != nil {
-		fmt.Fprintf(os.Stderr, "configure failed: %v\n", err)
-		syscall.Close(fd)
+		_, _ = fmt.Fprintf(os.Stderr, "configure failed: %v\n", err)
+		_ = syscall.Close(fd)
 		close(out)
 		return
 	}
 
 	f := os.NewFile(uintptr(fd), channel)
-	defer f.Close()
+	defer func(f *os.File) {
+		_ = f.Close()
+	}(f)
 
 	// Send the adapter init/config frame (sets CAN bitrate + mode).
 	cfg, err := configFrame(bitrate, mode)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "%v\n", err)
+		_, _ = fmt.Fprintf(os.Stderr, "%v\n", err)
 		close(out)
 		return
 	}
 	if _, err := f.Write(cfg); err != nil {
-		fmt.Fprintf(os.Stderr, "write init frame failed: %v\n", err)
+		_, _ = fmt.Fprintf(os.Stderr, "write init frame failed: %v\n", err)
 		close(out)
 		return
 	}
-	fmt.Fprintf(os.Stderr, "connected: %s @ %d bps CAN (%s)\n", channel, bitrate, mode)
+	_, _ = fmt.Fprintf(os.Stderr, "connected: %s @ %d bps CAN (%s)\n", channel, bitrate, mode)
 
 	r := bufio.NewReaderSize(f, 4096)
 	for {
 		// resync to start byte 0xAA
 		b1, err := r.ReadByte()
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "read error: %v\n", err)
+			_, _ = fmt.Fprintf(os.Stderr, "read error: %v\n", err)
 			close(out)
 			return
 		}
@@ -170,12 +177,12 @@ func HardwareSource(out chan<- structs.Frame, channel string, bitrate, serialBau
 		}
 		b2, err := r.ReadByte()
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "read error: %v\n", err)
+			_, _ = fmt.Fprintf(os.Stderr, "read error: %v\n", err)
 			close(out)
 			return
 		}
 		if b2 == 0x55 { // status frame: 0xAA 0x55 + 18 bytes, ignore
-			io.CopyN(io.Discard, r, 18)
+			_, _ = io.CopyN(io.Discard, r, 18)
 			continue
 		}
 		length := int(b2 & 0x0F)
